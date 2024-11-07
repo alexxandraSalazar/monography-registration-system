@@ -1,6 +1,13 @@
 {% block content %}
+
 {% if msg %}
-<h1> {{msg}} </h1>
+<script>
+    Swal.fire({
+        title: "Good job!",
+        text: "{{ msg }}",
+        icon: "success"
+    });
+</script>
 {% endif %}
 
 <div class="title">
