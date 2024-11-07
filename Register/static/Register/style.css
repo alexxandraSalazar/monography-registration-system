@@ -1,0 +1,12 @@
+
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5%;
+}
+.title{
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}

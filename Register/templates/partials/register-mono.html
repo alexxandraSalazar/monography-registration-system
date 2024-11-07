@@ -1,0 +1,46 @@
+{% block content %}
+<div class="title">
+    <h1>Registrar una Monografía</h1>
+</div>
+<div class="container">
+<div id="form-container">
+  <form  hx-post="{% url 'registerMono' %}" hx-target="#form-container" hx-swap="innerHTML">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="inputTitulo">Título</label>
+        <input type="text" class="form-control" id="inputTitulo" placeholder="Título de la monografía">
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputFechaDefensa">Fecha de Defensa</label>
+          <input type="date" class="form-control" id="inputFechaDefensa">
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputNotaDefensa">Nota de Defensa</label>
+          <input type="number" class="form-control" id="inputNotaDefensa" placeholder="Nota de la defensa" min="0" max="100">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputTiempoOtorgado">Tiempo Otorgado</label>
+          <input type="text" class="form-control" id="inputTiempoOtorgado" placeholder="Ej. 01:30:00">
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputTiempoDefensa">Tiempo de Defensa</label>
+          <input type="text" class="form-control" id="inputTiempoDefensa" placeholder="Ej. 00:45:00">
+        </div>
+      </div>
+      <div class="form-group text-center">
+        <label for="inputTiempoPregunta">Tiempo de Pregunta</label>
+        <input type="text" class="form-control" id="inputTiempoPregunta" placeholder="Ej. 00:10:00" style="max-width: 50%; margin: 0 auto;">
+      </div>
+      
+      <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary">Registrar Monografía</button>
+      </div>
+      
+      
+  </form>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% block content %}
+<div class="title">
+    <h1>Registrar un Estudiante</h1>
+</div>
+<div class="container">
+<div id="form-container">
+  <form  hx-post="{% url 'registerEstu' %}" hx-target="#form-container" hx-swap="innerHTML">
+      {% csrf_token %}
+      <div class="form-row">
+          <div class="form-group col-md-6">
+              <label for="inputNombres">Nombres</label>
+              <input type="text" name="nombres" class="form-control" id="inputNombres" placeholder="Nombres">
+          </div>
+          <div class="form-group col-md-6">
+              <label for="inputApellidos">Apellidos</label>
+              <input type="text" name="apellidos" class="form-control" id="inputApellidos" placeholder="Apellidos">
+          </div>
+      </div>
+      <div class="form-group">
+          <label for="inputDireccion">Dirección</label>
+          <textarea name="direccion" class="form-control" id="inputDireccion" rows="3" placeholder="Dirección"></textarea>
+      </div>
+      <div class="form-row">
+          <div class="form-group col-md-6">
+              <label for="inputTelefono">Teléfono</label>
+              <input type="text" name="telefono" class="form-control" id="inputTelefono" placeholder="Teléfono">
+          </div>
+          <div class="form-group col-md-6">
+              <label for="inputFechaNacimiento">Fecha de Nacimiento</label>
+              <input type="date" name="fecha_nacimiento" class="form-control" id="inputFechaNacimiento">
+          </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Guardar</button>
+  </form>
+</div>
+</div>
+{% endblock %}
