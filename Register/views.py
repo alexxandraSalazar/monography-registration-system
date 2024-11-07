@@ -88,10 +88,12 @@ def registerProf(request):
 def addEstu(request):
         if request.htmx:
             if request.method == "POST":
+                
                 return render(request, "partials/add-estu.html")
             elif request.method == "GET":
+                monos = Monografia.objects.all()
                 students = Estudiante.objects.all()
-                return render(request, "partials/add-estu.html",{'students': students})
+                return render(request, "partials/add-estu.html",{'students': students, 'monos': monos})
         return render(request,'Register/layout.html')
     
 def addTutor(request):

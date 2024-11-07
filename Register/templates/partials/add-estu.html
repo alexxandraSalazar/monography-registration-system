@@ -1,37 +1,67 @@
 {% block content %}
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Asignar Monografía</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="dropdown">Selecciona una opción</label>
+          <select class="form-control" id="dropdown">
+            {% for mono in monos %}
+            <option value="{{ mono.id }}">{{ mono.titulo }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary">Asignar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 <div class="title">
     <h1>Añadir a los estudiantes la monografía</h1>
 </div>
 <div class="container">
 
-    <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Id</th>
-            <th scope="col">Estudiante</th>
-            <th scope="col">Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-            {% for student in students %}
-          <tr>
-            <td>{{student.id}}</td>
-            <td>{{student.nombres}} {{student.apellidos}} </td>
-            <td><button class="btn btn-success">Asignar monografía</button>
-              <form hx-post="{% url 'deleteEstu' id=student.id %}">
-                {% csrf_token %}
-                <button class="btn btn-danger">Eliminar</button>
-            </form>
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="7" class="text-center align-middle">No hay Estudiantes registrados</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Estudiante</th>
+        <th scope="col">Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in students %}
+      <tr>
+        <td>{{student.id}}</td>
+        <td>{{student.nombres}} {{student.apellidos}}</td>
+        <td>
+          <button class="btn btn-success mr-2" data-toggle="modal" data-target="#exampleModal" type="button">Asignar monografía</button>
+          <form hx-post="{% url 'deleteEstu' id=student.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button class="btn btn-danger">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="text-center align-middle">No hay Estudiantes registrados</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
 </div>
 
 {% endblock %}
