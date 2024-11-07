@@ -19,7 +19,10 @@
             <td>{{profesor.id}}</td>
             <td>{{profesor.nombres}} {{profesor.apellidos}} </td>
             <td><button class="btn btn-success">Asignar monografía</button>
+              <form hx-post="{% url 'deleteProf' id=profesor.id %}">
+                {% csrf_token %}
                 <button class="btn btn-danger">Eliminar</button>
+            </form>
             </td>
           </tr>
           {% empty %}

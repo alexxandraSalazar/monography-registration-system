@@ -24,7 +24,11 @@
             <td>{{mono.tiempo_defensa}}</td>
             <td>{{mono.tiempo_otorgado}}</td>
             <td>{{mono.tiempo_pregunta}}</td>
-            <td><button class="btn btn-danger">Eliminar</button></td>
+            <td>
+              <form hx-post="{% url 'deleteMono' id=mono.id %}">
+                {% csrf_token %}
+                <button class="btn btn-danger">Eliminar</button>
+            </form>
           </tr>
           {% empty %}
           <tr>

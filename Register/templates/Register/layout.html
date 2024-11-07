@@ -76,39 +76,6 @@
         {% block content %}
         <div class="container">
 
-            <table class="table">
-                <thead>
-                  <tr>
-                    <th scope="col">Id</th>
-                    <th scope="col">Título</th>
-                    <th scope="col">Fecha de Defensa</th>
-                    <th scope="col">Nota de defensa</th>
-                    <th scope="col">Tiempo de defensa</th>
-                    <th scope="col">Tiempo otorgado</th>
-                    <th scope="col">Tiempo de Preguntas</th>
-                    <th scope="col">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                    {% for mono in monos %}
-                  <tr>
-                    <td>{{mono.id}}</td>
-                    <td>{{mono.titulo}}</td>
-                    <td>{{mono.fecha_defensa}}</td>
-                    <td>{{mono.nota_defensa}}</td>
-                    <td>{{mono.tiempo_defensa}}</td>
-                    <td>{{mono.tiempo_otorgado}}</td>
-                    <td>{{mono.tiempo_pregunta}}</td>
-                    <td><button class="btn btn-danger">Eliminar</button></td>
-                  </tr>
-                  {% empty %}
-                  <tr>
-                    <td colspan="7" class="text-center align-middle">No hay monografías registradas</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-        </div>
         {% endblock %}
     </div>
 

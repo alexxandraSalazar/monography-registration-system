@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Monografia, Estudiante, Profesor, Rol, ProfesorMonografia
 
 # Create your views here.
@@ -111,3 +111,33 @@ def addJudges(request):
                 profesores = Profesor.objects.all()
                 return render(request, "partials/add-judges.html",{'profesores': profesores})
         return render(request,'Register/layout.html')
+    
+    
+def deleteMono(request, id):
+    if request.htmx:
+        if request.method == "POST":
+            monografia = Monografia.objects.get(id=id)
+            monografia.delete()
+            msg = "Monografía eliminada con éxito"
+            monos = Monografia.objects.all()  
+            return render(request, "partials/table-mono.html", {'monos': monos})
+        
+
+def deleteProf(request, id):
+    if request.htmx:
+        if request.method == "POST":
+            profesor = Profesor.objects.get(id=id)
+            profesor.delete()
+            msg = "Profesor eliminado con éxito"
+            profesores = Profesor.objects.all()  
+            return render(request, "partials/table-mono.html",{'profesores': profesores})
+        
+def deleteEstu(request, id):
+    if request.htmx:
+        if request.method == "POST":
+            estudiante = Estudiante.objects.get(id=id)
+            estudiante.delete()
+            msg = "Estudiante eliminada con éxito"
+            students = Estudiante.objects.all()  
+            return render(request, "partials/table-mono.html",{'students': students})
+

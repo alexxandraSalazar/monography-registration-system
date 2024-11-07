@@ -10,4 +10,7 @@ urlpatterns = [
     path('add-estu/', views.addEstu, name='addEstu'),
     path('add-tutor/', views.addTutor, name='addTutor'),
     path('add-judges/', views.addJudges, name='addJudges'),
+    path('delete-mono/<int:id>', views.deleteMono, name='deleteMono'),
+    path('delete-Estu/<int:id>', views.deleteEstu, name='deleteEstu'),
+    path('delete-Prof/<int:id>', views.deleteProf, name='deleteProf'),
 ]
