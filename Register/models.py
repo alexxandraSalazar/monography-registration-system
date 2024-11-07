@@ -23,9 +23,9 @@ class Monografia(models.Model):
     titulo = models.CharField(max_length=200)
     fecha_defensa = models.DateField()
     nota_defensa = models.IntegerField()
-    tiempo_otorgado = models.DurationField()
-    tiempo_defensa = models.DurationField()
-    tiempo_pregunta = models.DurationField()
+    tiempo_otorgado = models.IntegerField()
+    tiempo_defensa = models.IntegerField()
+    tiempo_pregunta = models.IntegerField()
 
     def __str__(self):
         return self.titulo

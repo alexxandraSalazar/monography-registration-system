@@ -1,3 +1,34 @@
 {% block content %}
-<h1>this is para anadir un tutor a una monografia</h1>
+
+<div class="title">
+    <h1>Añadir un tutor a una monografía</h1>
+</div>
+<div class="container">
+
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Profesor</th>
+            <th scope="col">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for profesor in profesores %}
+          <tr>
+            <td>{{profesor.id}}</td>
+            <td>{{profesor.nombres}} {{profesor.apellidos}} </td>
+            <td><button class="btn btn-success">Asignar monografía</button>
+                <button class="btn btn-danger">Eliminar</button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center align-middle">No hay Profesores registrados</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+</div>
+
 {% endblock %}
