@@ -11,7 +11,7 @@ This is the implementation of the fifth lab of the "AED" class, focusing on mode
 
 
 Deployed on render:
-- [Go to]([https://www.github.com/alexxandraSalazar](https://monography-register-system.onrender.com))
+- [Go to](https://monography-register-system.onrender.com)
 
 ## Run locally
 
