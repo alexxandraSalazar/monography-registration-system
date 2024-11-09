@@ -1,5 +1,7 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from .models import Monografia, Estudiante, Profesor, Rol, ProfesorMonografia
+import sweetify
 
 # Create your views here.
 def index(request):
@@ -11,83 +13,94 @@ def index(request):
         return render(request,'Register/layout.html', {'monos' : monos})
 
 def registerMono(request):
-        if request.htmx:
-            if request.method == "POST":
-                titulo = request.POST.get('titulo')
-                fecha_defensa = request.POST.get('fecha_defensa')
-                nota_defensa = request.POST.get('nota_defensa')
-                tiempo_otorgado = request.POST.get('tiempo_otorgado')
-                tiempo_defensa = request.POST.get('tiempo_defensa')
-                tiempo_pregunta = request.POST.get('tiempo_pregunta')
-                
-                newMono = Monografia.objects.create(
-                    titulo = titulo,
-                    fecha_defensa = fecha_defensa,
-                    nota_defensa = nota_defensa,
-                    tiempo_otorgado = tiempo_otorgado,
-                    tiempo_defensa = tiempo_defensa,
-                    tiempo_pregunta = tiempo_pregunta
-                )
-                newMono.save()
-                msg = 'Monografía registrada con éxito'
-                return render(request, "partials/register-mono.html", {'msg': msg})
-            elif request.method == 'GET':
-                return render(request, "partials/register-mono.html")
-        return render(request,'Register/layout.html')
+    if request.method == "POST":
+        try:
+            titulo = request.POST.get('titulo')
+            fecha_defensa = request.POST.get('fecha_defensa')
+            nota_defensa = request.POST.get('nota_defensa')
+            tiempo_otorgado = request.POST.get('tiempo_otorgado')
+            tiempo_defensa = request.POST.get('tiempo_defensa')
+            tiempo_pregunta = request.POST.get('tiempo_pregunta')
+                    
+            Monografia.objects.create(
+                titulo = titulo,
+                fecha_defensa = fecha_defensa,
+                nota_defensa = nota_defensa,
+                tiempo_otorgado = tiempo_otorgado,
+                tiempo_defensa = tiempo_defensa,
+                tiempo_pregunta = tiempo_pregunta
+            )
+        
+            return JsonResponse({'status': 'success', 'message': 'Monografía registrada exitosamente'}, status=200)
+        
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': 'Error al registrar la Monografía'}, status=500)
+        
+    elif request.method == 'GET' and request.htmx:
+        return render(request, "partials/register-mono.html")
+    return render(request,'Register/layout.html')
 
 def registerEstu(request):
-        if request.htmx:
-            if request.method == "POST":
-                nombres = request.POST.get('nombres')
-                apellidos = request.POST.get('apellidos')
-                direccion = request.POST.get('direccion')
-                telefono = request.POST.get('telefono')
-                fecha_nacimiento = request.POST.get('fecha_nacimiento')
-                
-                newStudent = Estudiante.objects.create(
-                    nombres = nombres,
-                    apellidos = apellidos,
-                    direccion = direccion,
-                    telefono = telefono,
-                    fecha_nacimiento = fecha_nacimiento
-                )
-                newStudent.save()
-                msg = 'Estudiante guardado con éxito'
-                print(msg)
-                return render(request, "partials/register-estu.html",{'msg': msg})
-            elif request.method == 'GET':
-                print('get')
-                return render(request, "partials/register-estu.html")
-        return render(request,'Register/layout.html')
+    if request.method == "POST":
+        try:
+            estuData = request.POST
+            nombres = estuData.get('nombres')
+            apellidos = estuData.get('apellidos')
+            direccion = estuData.get('direccion')
+            telefono = estuData.get('telefono')
+            fecha_nacimiento = estuData.get('fecha_nacimiento')
+            
+            Estudiante.objects.create(
+                nombres=nombres,
+                apellidos=apellidos,
+                direccion=direccion,
+                telefono=telefono,
+                fecha_nacimiento=fecha_nacimiento
+            )
+            
+            return JsonResponse({'status': 'success', 'message': 'Estudiante registrado exitosamente'}, status=200)
+        
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': 'Error al registrar el estudiante'}, status=500)
+
+    elif request.method == "GET" and request.htmx:
+        return render(request, "partials/register-estu.html")
+    
+    return render(request, 'Register/layout.html')
+
 
 def registerProf(request):
-        if request.htmx:
-            if request.method == "POST":
-                nombres = request.POST.get('nombres')
-                apellidos = request.POST.get('apellidos')
-                direccion = request.POST.get('direccion')
-                telefono = request.POST.get('telefono')
-                fecha_nacimiento = request.POST.get('fecha_nacimiento')
-                
-                newProf = Profesor.objects.create(
-                    nombres = nombres,
-                    apellidos = apellidos,
-                    direccion = direccion,
-                    telefono = telefono,
-                    fecha_nacimiento = fecha_nacimiento
-                )
-                newProf.save()
-                msg = 'profesor guarado guardado con éxito'
-                print(msg)
-                return render(request, "partials/register-profe.html",{'msg': msg})
-            elif request.method == 'GET':
-                print('get')
-            return render(request, "partials/register-profe.html")
-        return render(request,'Register/layout.html')
+    if request.method == "POST":
+        try:
+            estuData = request.POST
+            nombres = estuData.get('nombres')
+            apellidos = estuData.get('apellidos')
+            direccion = estuData.get('direccion')
+            telefono = estuData.get('telefono')
+            fecha_nacimiento = estuData.get('fecha_nacimiento')
+            
+            Profesor.objects.create(
+                nombres=nombres,
+                apellidos=apellidos,
+                direccion=direccion,
+                telefono=telefono,
+                fecha_nacimiento=fecha_nacimiento
+            )
+            
+            return JsonResponse({'status': 'success', 'message': 'Profesor registrado exitosamente'}, status=200)
+        
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': 'Error al registrar el Profesor'}, status=500)
+
+    elif request.method == "GET" and request.htmx:
+        print('get')
+        return render(request, "partials/register-profe.html")
+    return render(request,'Register/layout.html')
     
 def addEstu(request):
         if request.htmx:
             if request.method == "POST":
+                print('post')
                 
                 return render(request, "partials/add-estu.html")
             elif request.method == "GET":

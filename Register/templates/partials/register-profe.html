@@ -1,19 +1,10 @@
 {% block content %}
-{% if msg %}
-<script>
-    Swal.fire({
-        title: "Good job!",
-        text: "{{ msg }}",
-        icon: "success"
-    });
-</script>
-{% endif %}
 <div class="title">
     <h1>Registrar un profesor</h1>
 </div>
 <div class="container">
-    <div id="form-container">
-        <form  hx-post="{% url 'registerProf' %}" hx-target="#form-container" hx-swap="innerHTML">
+    <div id="form-container" data-register-url="{% url 'registerProf' %}">
+        <form id="profeForm" method="post" >
             {% csrf_token %}
             <div class="form-row">
                 <div class="form-group col-md-6">

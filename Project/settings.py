@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['monography-register-system.onrender.com', 'localhost', '127.0.
 # Application definition
 
 INSTALLED_APPS = [
+    'sweetify',
     'Register',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -128,3 +129,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# possible options: 'sweetalert', 'sweetalert2' - default is 'sweetalert2'
+SWEETIFY_SWEETALERT_LIBRARY = 'sweetalert2'
