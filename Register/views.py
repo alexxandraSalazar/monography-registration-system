@@ -1,16 +1,20 @@
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from .models import Monografia, Estudiante, Profesor, Rol, ProfesorMonografia
 import sweetify
 
 # Create your views here.
 def index(request):
-        if request.htmx:
-            if request.method == "GET":
-                monos = Monografia.objects.all()
-                return render(request, "partials/table-mono.html", {'monos' : monos})
-        monos = Monografia.objects.all()
-        return render(request,'Register/layout.html', {'monos' : monos})
+    if request.htmx:
+        if request.method == "GET":
+            index_url = reverse('index') 
+            monos = Monografia.objects.all()
+            return render(request, "partials/table-mono.html", {'monos': monos,  'index_url': index_url})
+
+    monos = Monografia.objects.all()
+    index_url = reverse('index') 
+    addEstuUrl = reverse('addEstu') 
+    return render(request, 'Register/layout.html', {'monos': monos, 'index_url': index_url})
 
 def registerMono(request):
     if request.method == "POST":
@@ -98,61 +102,70 @@ def registerProf(request):
     return render(request,'Register/layout.html')
     
 def addEstu(request):
+        addEstuUrl = reverse('addEstu') 
         if request.htmx:
             if request.method == "POST":
                 print('post')
-                
-                return render(request, "partials/add-estu.html")
+                return render(request, "partials/add-estu.html", {'addEstuUrl': addEstuUrl})
             elif request.method == "GET":
                 monos = Monografia.objects.all()
                 students = Estudiante.objects.all()
-                return render(request, "partials/add-estu.html",{'students': students, 'monos': monos})
-        return render(request,'Register/layout.html')
+                return render(request, "partials/add-estu.html",{'students': students, 'monos': monos, 'addEstuUrl': addEstuUrl})
+        return render(request,'Register/layout.html', {'addEstuUrl': addEstuUrl})
     
 def addTutor(request):
+        addProfUrl = reverse('addTutor')
         if request.htmx:
             if request.method == "POST":
-                return render(request, "partials/add-tutor.html")
+                return render(request, "partials/add-tutor.html", {'addProfUrl': addProfUrl})
             elif request.method == "GET":
                 profesores = Profesor.objects.all()
-                return render(request, "partials/add-tutor.html",{'profesores': profesores})
+                return render(request, "partials/add-tutor.html",{'profesores': profesores, 'addProfUrl': addProfUrl})
         return render(request,'Register/layout.html')
     
 def addJudges(request):
+        addProfUrl = reverse('addJudges')
         if request.htmx:
             if request.method == "POST":
-                return render(request, "partials/add-judges.html")
+                return render(request, "partials/add-judges.html", {'addProfUrl': addProfUrl})
             elif request.method == "GET":
                 profesores = Profesor.objects.all()
-                return render(request, "partials/add-judges.html",{'profesores': profesores})
+                return render(request, "partials/add-judges.html",{'profesores': profesores, 'addProfUrl': addProfUrl})
         return render(request,'Register/layout.html')
     
     
 def deleteMono(request, id):
-    if request.htmx:
-        if request.method == "POST":
-            monografia = Monografia.objects.get(id=id)
-            monografia.delete()
-            msg = "Monografía eliminada con éxito"
-            monos = Monografia.objects.all()  
-            return render(request, "partials/table-mono.html", {'monos': monos})
-        
+    if request.method == "POST":
+        print('POST request received')
+        try:
+            monografia = Monografia.objects.get(id=id) 
+            monografia.delete() 
+            return JsonResponse({'status': 'success', 'message': 'Monografía borrada exitosamente'}, status=200)
+            
+        except Monografia.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Monografía no encontrada'}, status=404)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': f'Error al eliminar Monografía: {str(e)}'}, status=500) 
 
 def deleteProf(request, id):
-    if request.htmx:
-        if request.method == "POST":
+    if request.method == "POST":
+        try:
             profesor = Profesor.objects.get(id=id)
             profesor.delete()
-            msg = "Profesor eliminado con éxito"
-            profesores = Profesor.objects.all()  
-            return render(request, "partials/table-mono.html",{'profesores': profesores})
-        
+            return JsonResponse({'status': 'success', 'message': 'Profesor borrado exitosamente'}, status=200)   
+        except Profesor.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Profesor no encontrado'}, status=404)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': f'Error al eliminar profesor: {str(e)}'}, status=500)
+
 def deleteEstu(request, id):
-    if request.htmx:
-        if request.method == "POST":
+    if request.method == "POST":
+        try:
             estudiante = Estudiante.objects.get(id=id)
             estudiante.delete()
-            msg = "Estudiante eliminada con éxito"
-            students = Estudiante.objects.all()  
-            return render(request, "partials/table-mono.html",{'students': students})
-
+            return JsonResponse({'status': 'success', 'message': 'Estudiante borrado exitosamente'}, status=200)   
+        except Estudiante.DoesNotExist: 
+            return JsonResponse({'status': 'error', 'message': 'Estudiante no encontrado'}, status=404)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': f'Error al eliminar estudiante: {str(e)}'}, status=500)
+ 

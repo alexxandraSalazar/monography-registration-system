@@ -1,5 +1,5 @@
 {% block content %}
-<div class="title">
+<div class="title"  data-addProf-url="{{ addProfUrl }}">
     <h1>Añadir los jurados a una monografía</h1>
 </div>
 <div class="container">
@@ -19,9 +19,10 @@
         <td>{{profesor.nombres}} {{profesor.apellidos}}</td>
         <td>
           <button class="btn btn-success mr-2" data-toggle="modal" data-target="#exampleModal" type="button">Asignar monografía</button>
-          <form hx-post="{% url 'deleteProf' id=profesor.id %}" style="display:inline;">
+          <form id="deleteProfForm" data-register-url="{% url 'deleteProf' id=profesor.id %}" method="post" style="display:inline;">
+            <input type="hidden" name="id" value="{{ profesor.id }}">
             {% csrf_token %}
-            <button class="btn btn-danger">Eliminar</button>
+            <button class="btn btn-danger mt-2" >Eliminar</button>
           </form>
         </td>
       </tr>

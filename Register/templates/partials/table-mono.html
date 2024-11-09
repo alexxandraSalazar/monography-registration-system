@@ -25,9 +25,10 @@
             <td>{{mono.tiempo_otorgado}}</td>
             <td>{{mono.tiempo_pregunta}}</td>
             <td>
-              <form hx-post="{% url 'deleteMono' id=mono.id %}">
+              <form id="deleteMonoForm" data-register-url="{% url 'deleteMono' id=mono.id %}" method="post">
+                <input type="hidden" name="id" value="{{ mono.id }}" />
                 {% csrf_token %}
-                <button class="btn btn-danger">Eliminar</button>
+                <button type="submit" class="btn btn-danger">Eliminar</button>
             </form>
           </tr>
           {% empty %}

@@ -28,7 +28,7 @@
 
 
 
-<div class="title">
+<div class="title" data-addEstu-url="{{ addEstuUrl }}">
     <h1>Añadir a los estudiantes la monografía</h1>
 </div>
 <div class="container">
@@ -48,9 +48,10 @@
         <td>{{student.nombres}} {{student.apellidos}}</td>
         <td>
           <button class="btn btn-success mr-2" data-toggle="modal" data-target="#exampleModal" type="button">Asignar monografía</button>
-          <form hx-post="{% url 'deleteEstu' id=student.id %}" style="display:inline;">
-            {% csrf_token %}
-            <button class="btn btn-danger">Eliminar</button>
+          <form id="deleteEstuForm" data-register-url="{% url 'deleteEstu' id=student.id %}" method="post" style="display:inline;">
+            <input type="hidden" name="id" value="{{ student.id }}" />
+              {% csrf_token %}
+            <button class="btn btn-danger mt-2">Eliminar</button>
           </form>
         </td>
       </tr>
