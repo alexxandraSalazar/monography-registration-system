@@ -12,8 +12,6 @@
                     <th scope="col">Tiempo de defensa</th>
                     <th scope="col">Tiempo otorgado</th>
                     <th scope="col">Tiempo de Preguntas</th>
-                    <th scope="col">Estudiante</th>
-                    <th scope="col">Profesor(es)</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
@@ -27,22 +25,6 @@
                         <td>{{ mono.tiempo_defensa }}</td>
                         <td>{{ mono.tiempo_otorgado }}</td>
                         <td>{{ mono.tiempo_pregunta }}</td>
-                        <td>
-                            {% if mono.estudiante %}
-                                {{ mono.estudiante.nombres }} {{ mono.estudiante.apellidos }}
-                            {% else %}
-                                No asignado aún
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if mono.profesores %}
-                                {% for profesor_monografia in mono.profesores %}
-                                    <p>{{ profesor_monografia.profesor.nombres }} {{ profesor_monografia.profesor.apellidos }} - {{ profesor_monografia.rol.nombre }}</p>
-                                {% endfor %}
-                            {% else %}
-                                No asignado aún
-                            {% endif %}
-                        </td>
                         <td>
                             <form id="deleteMonoForm" data-register-url="{% url 'deleteMono' id=mono.id %}" method="post">
                                 <input type="hidden" name="id" value="{{ mono.id }}" />
