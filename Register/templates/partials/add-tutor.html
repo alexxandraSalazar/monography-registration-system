@@ -1,5 +1,33 @@
 {% block content %}
-
+<!-- start modal -->
+<div class="modal fade" id="tutorModal" tabindex="-1" role="dialog" aria-labelledby="tutorModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tutorModalLabel">Asignar tutor a  Monografía</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="tutorDropdown">Selecciona una monografía</label>
+          <select class="form-control" id="tutorDropdown">
+            {% for mono in monos %}
+            <option value="{{ mono.id }}">{{ mono.titulo }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <input type="hidden" id="tutorId" value="">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="assigntutorButton">Asignar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end modal -->
 <div class="title"  data-addProf-url="{{ addProfUrl }}">
     <h1>Añadir un tutor a una monografía</h1>
 </div>
@@ -19,9 +47,8 @@
         <td>{{profesor.id}}</td>
         <td>{{profesor.nombres}} {{profesor.apellidos}}</td>
         <td>
-          <button class="btn btn-success mr-2" data-toggle="modal" data-target="#exampleModal" type="button">Asignar monografía</button>
-          <br>
-          <form id="deleteProfForm" data-register-url="{% url 'deleteProf' id=profesor.id %}" method="post" style="display:inline;">
+          <button class="btn btn-success mr-2" data-toggle="modal" data-target="#tutorModal" type="button">Asignar monografía</button>
+          <form id="deleteProfForm" add-tutor-url="{% url 'asignarTutor' %}" data-register-url="{% url 'deleteProf' id=profesor.id %}" method="post" style="display:inline;">
             <input type="hidden" name="id" value="{{ profesor.id }}" />
             {% csrf_token %}
             <button class="btn btn-danger mt-2">Eliminar</button>

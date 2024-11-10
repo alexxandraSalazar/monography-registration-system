@@ -7,16 +7,19 @@ from .models import Monografia, Estudiante, Profesor, Rol, ProfesorMonografia
 
 # Create your views here.
 def index(request):
+    index_url = reverse('index')
+    addEstuUrl = reverse('addEstu')
+    monos = Monografia.objects.all()
+
     if request.htmx:
         if request.method == "GET":
-            index_url = reverse('index') 
-            monos = Monografia.objects.all()
-            return render(request, "partials/table-mono.html", {'monos': monos,  'index_url': index_url})
+            return render(request, "partials/table-mono.html", {'monos': monos, 'index_url': index_url})
+    
+    if request.method == "GET":
+        return render(request, 'Register/index.html', {'monos': monos, 'index_url': index_url, 'addEstuUrl': addEstuUrl})
 
-    monos = Monografia.objects.all()
-    index_url = reverse('index') 
-    addEstuUrl = reverse('addEstu') 
     return render(request, 'Register/layout.html', {'monos': monos, 'index_url': index_url})
+
 
 def registerMono(request):
     if request.method == "POST":

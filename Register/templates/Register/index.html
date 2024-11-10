@@ -1,0 +1,131 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de registro de Monografías</title>
+    <link rel="stylesheet" href="{% static 'Register/style.css' %}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"/>
+</head>
+<body data-index-url="{{ index_url }}" >
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{% url 'index' %}" hx-get="{% url 'index' %}" hx-target="#content" hx-swap="innerHTML">Registro de Monografías</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'registerEstu' %}" hx-get="{% url 'registerEstu' %}" hx-target="#content" hx-swap="innerHTML">Registrar Estudiante</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'registerProf' %}" hx-get="{% url 'registerProf' %}" hx-target="#content" hx-swap="innerHTML">Registrar Profesor</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Monografía</a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{% url 'registerMono' %}" hx-get="{% url 'registerMono' %}" hx-target="#content" hx-swap="innerHTML">Registrar Monografía</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'addEstu' %}" hx-get="{% url 'addEstu' %}" hx-target="#content" hx-swap="innerHTML">Añadir Estudiantes</a>
+                    <a class="dropdown-item" href="{% url 'addTutor' %}" hx-get="{% url 'addTutor' %}" hx-target="#content" hx-swap="innerHTML">Añadir Tutor</a>
+                    <a class="dropdown-item" href="{% url 'addJudges' %}" hx-get="{% url 'addJudges' %}" hx-target="#content" hx-swap="innerHTML">Añadir Jurados</a>
+                </div>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" />
+            <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div>
+    </nav>
+
+    <div class="col-sm p-3 min-vh-100 " id="content">
+        {% block content %}
+        <div class="container">
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Título</th>
+                            <th scope="col">Fecha de Defensa</th>
+                            <th scope="col">Nota de defensa</th>
+                            <th scope="col">Tiempo de defensa</th>
+                            <th scope="col">Tiempo otorgado</th>
+                            <th scope="col">Tiempo de Preguntas</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mono in monos %}
+                            <tr>
+                                <td>{{ mono.id }}</td>
+                                <td>{{ mono.titulo }}</td>
+                                <td>{{ mono.fecha_defensa }}</td>
+                                <td>{{ mono.nota_defensa }}</td>
+                                <td>{{ mono.tiempo_defensa }}</td>
+                                <td>{{ mono.tiempo_otorgado }}</td>
+                                <td>{{ mono.tiempo_pregunta }}</td>
+                                <td>
+                                    <form id="deleteMonoForm" data-register-url="{% url 'deleteMono' id=mono.id %}" method="post">
+                                        <input type="hidden" name="id" value="{{ mono.id }}" />
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                    </form>
+                                    <button class="btn btn-info mt-2" data-toggle="modal" data-target="#infoModal{{ mono.id }}">More Info</button>
+                                </td>
+                            </tr>
+        
+                            <!-- Modal -->
+                            <div class="modal fade" id="infoModal{{ mono.id }}" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel{{ mono.id }}" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="infoModalLabel{{ mono.id }}">Información de la Monografía: {{ mono.titulo }}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p><strong>Estudiante:</strong> {% if mono.estudiante %}{{ mono.estudiante.nombres }} {{ mono.estudiante.apellidos }}{% else %}this is gonna show the student assign{% endif %}</p>
+                                            <p><strong>Profesores asignados:</strong></p>
+                                            {% for profesor_monografia in mono.profesores %}
+                                                <p>{{ profesor_monografia.profesor.nombres }} {{ profesor_monografia.profesor.apellidos }} - {{ profesor_monografia.rol.nombre }}</p>
+                                            {% empty %}
+                                                <p>this is gonna show the teacher assign</p>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <tr>
+                                <td colspan="10" class="text-center align-middle">No hay monografías registradas</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        
+        </div>
+        {% endblock %}
+    </div>
+
+    <script src="https://unpkg.com/htmx.org@1.8.4"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{% static 'Register/main.js' %}"></script>
+
+    {% load sweetify %}
+    {% sweetify %}
+</body>
+</html>
