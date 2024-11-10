@@ -26,7 +26,6 @@ class Monografia(models.Model):
     tiempo_otorgado = models.IntegerField()
     tiempo_defensa = models.IntegerField()
     tiempo_pregunta = models.IntegerField()
-
     def __str__(self):
         return self.titulo
 

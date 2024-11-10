@@ -1,7 +1,9 @@
+import json
 from django.http import JsonResponse
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from .models import Monografia, Estudiante, Profesor, Rol, ProfesorMonografia
-import sweetify
+
+
 
 # Create your views here.
 def index(request):
@@ -119,8 +121,9 @@ def addTutor(request):
             if request.method == "POST":
                 return render(request, "partials/add-tutor.html", {'addProfUrl': addProfUrl})
             elif request.method == "GET":
+                monos = Monografia.objects.all()
                 profesores = Profesor.objects.all()
-                return render(request, "partials/add-tutor.html",{'profesores': profesores, 'addProfUrl': addProfUrl})
+                return render(request, "partials/add-tutor.html",{'profesores': profesores,'monos': monos, 'addProfUrl': addProfUrl})
         return render(request,'Register/layout.html')
     
 def addJudges(request):
@@ -168,4 +171,45 @@ def deleteEstu(request, id):
             return JsonResponse({'status': 'error', 'message': 'Estudiante no encontrado'}, status=404)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': f'Error al eliminar estudiante: {str(e)}'}, status=500)
- 
+        
+        
+def AsignarEstudiante(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        student_id = data.get("student_id")
+        mono_id = data.get("mono_id")
+
+        try:
+            estudiante = Estudiante.objects.get(id=student_id)
+            monografia = Monografia.objects.get(id=mono_id)
+            
+            estudiante.monografia = monografia
+            estudiante.save()  
+
+            return JsonResponse({"success": True})
+        except Estudiante.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Estudiante no encontrado"})
+        except Monografia.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Monografía no encontrada"})
+    return JsonResponse({"success": False, "error": "Método no permitido"})
+
+
+def AsignarTutor(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        profesor_id = data.get("profesor_id")
+        monografia_id = data.get("monografia_id")
+
+        try:
+            profesor = Profesor.objects.get(id=profesor_id)
+            monografia = Monografia.objects.get(id=monografia_id)
+            rol, created = Rol.objects.get_or_create(nombre="Tutor")
+
+            ProfesorMonografia.objects.create(profesor=profesor, monografia=monografia, rol=rol)
+
+            return JsonResponse({"success": True, "message": "Tutor asignado correctamente"})
+        except Profesor.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Profesor no encontrado"})
+        except Monografia.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Monografía no encontrada"})
+    return JsonResponse({"success": False, "error": "Método no permitido"})

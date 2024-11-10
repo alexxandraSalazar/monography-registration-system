@@ -1,4 +1,5 @@
 {% block content %}
+<!-- start modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -10,21 +11,23 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label for="dropdown">Selecciona una opción</label>
+          <label for="dropdown">Selecciona una monografía</label>
           <select class="form-control" id="dropdown">
             {% for mono in monos %}
             <option value="{{ mono.id }}">{{ mono.titulo }}</option>
             {% endfor %}
           </select>
         </div>
+        <input type="hidden" id="studentId" value="">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary">Asignar</button>
+        <button type="button" class="btn btn-primary" id="assignButton">Asignar</button>
       </div>
     </div>
   </div>
 </div>
+<!-- end modal -->
 
 
 
@@ -47,8 +50,8 @@
         <td>{{student.id}}</td>
         <td>{{student.nombres}} {{student.apellidos}}</td>
         <td>
-          <button class="btn btn-success mr-2" data-toggle="modal" data-target="#exampleModal" type="button">Asignar monografía</button>
-          <form id="deleteEstuForm" data-register-url="{% url 'deleteEstu' id=student.id %}" method="post" style="display:inline;">
+          <button id="assignButton" class="btn btn-success mr-2" data-toggle="modal" data-target="#exampleModal" type="button">Asignar monografía</button>
+          <form id="deleteEstuForm" add-estu-url="{% url 'asignarEstudiante' %}" data-register-url="{% url 'deleteEstu' id=student.id %}" method="post" style="display:inline;">
             <input type="hidden" name="id" value="{{ student.id }}" />
               {% csrf_token %}
             <button class="btn btn-danger mt-2">Eliminar</button>
