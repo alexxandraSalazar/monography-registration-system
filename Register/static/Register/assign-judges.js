@@ -21,7 +21,7 @@ const monografiaId = monografiaDropdown.value;
 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
 if (!juradoId || !monografiaId) {
-    Swal.fire("Error", "Debe seleccionar un jurado y una monografía.", "error");
+    Swal.fire("Error", "Debe seleccionar una monografía.", "error");
     return;
 }
 

@@ -10,6 +10,7 @@ document.querySelectorAll(".assign-tutor-btn").forEach(button => {
 button.addEventListener("click", () => {
     profesorIdField.value = button.closest("tr").querySelector("td:first-child").textContent;
     addTutorUrl = button.getAttribute("data-add-tutor-url");
+
 });
 });
 
@@ -17,6 +18,11 @@ assignTutorButton.addEventListener("click", async () => {
 const profesorId = profesorIdField.value;
 const monoId = tutorDropdown.value;
 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+if (!juradoId || !monografiaId) {
+    Swal.fire("Error", "Debe seleccionar una monografía.", "error");
+    return;
+}
 
 try {
     const response = await fetch(addTutorUrl, {
