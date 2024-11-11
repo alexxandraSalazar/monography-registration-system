@@ -18,7 +18,7 @@ assignButton.addEventListener("click", async function () {
 const studentId = studentIdField.value;
 const monoId = dropdown.value;
 
-if (!monografiaId) {
+if (!monoId) {
     Swal.fire("Error", "Debe seleccionar una monografía.", "error");
     return;
 }

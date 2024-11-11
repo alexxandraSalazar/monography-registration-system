@@ -19,7 +19,7 @@ const profesorId = profesorIdField.value;
 const monoId = tutorDropdown.value;
 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-if (!monografiaId) {
+if (!monoId) {
     Swal.fire("Error", "Debe seleccionar una monografía.", "error");
     return;
 }
