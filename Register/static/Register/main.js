@@ -1,4 +1,101 @@
 document.body.addEventListener('htmx:afterOnLoad', function(event) {
+
+//Start asignar Jurado code block
+    const juradoIdField = document.getElementById("juradoIdField");
+    const monografiaDropdown = document.getElementById("monografiaDropdown");
+    const assignJuradoButton = document.getElementById("assignJuradoButton");
+    
+    let addJuradoUrl = "";
+    
+    document.querySelectorAll(".assign-jurado-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        juradoIdField.value = button.closest("tr").querySelector("td:first-child").textContent;
+        addJuradoUrl = button.getAttribute("data-add-jurado-url");
+        
+      });
+    });
+    
+    assignJuradoButton.addEventListener("click", async () => {
+      console.log('clicked'); 
+      const juradoId = juradoIdField.value;
+      const monografiaId = monografiaDropdown.value;
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+      if (!juradoId || !monografiaId) {
+        Swal.fire("Error", "Debe seleccionar un jurado y una monografía.", "error");
+        return;
+      }
+    
+      try {
+        const response = await fetch(addJuradoUrl, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrfToken,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ jurado_id: juradoId, monografia_id: monografiaId })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          Swal.fire("¡Éxito!", "Jurado asignado exitosamente", "success");
+          $('#exampleModal').modal('hide');
+        } else {
+          Swal.fire("Error", data.error || "Hubo un problema. Por favor, intente nuevamente.", "error");
+        }
+      } catch (error) {
+        Swal.fire("Error", "Error de red. Por favor, intente nuevamente.", "error");
+      }
+    });
+    
+// End asignar jurado block
+
+// Start Asignar Tutor code block
+        const profesorIdField = document.getElementById("profesorIdField");
+    const tutorDropdown = document.getElementById("tutorDropdown");
+    const assignTutorButton = document.getElementById("assignTutorButton");
+    
+    let addTutorUrl = "";
+    
+
+    document.querySelectorAll(".assign-tutor-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        profesorIdField.value = button.closest("tr").querySelector("td:first-child").textContent;
+        addTutorUrl = button.getAttribute("data-add-tutor-url");
+      });
+    });
+    
+    assignTutorButton.addEventListener("click", async () => {
+      const profesorId = profesorIdField.value;
+      const monoId = tutorDropdown.value;
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+      try {
+        const response = await fetch(addTutorUrl, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrfToken,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ profesor_id: profesorId, monografia_id: monoId })
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+          Swal.fire("¡Éxito!", "Monografía asignada exitosamente", "success");
+          $('#tutorModal').modal('hide');
+        } else {
+          Swal.fire("Error", data.error || "Hubo un problema. Por favor, intente nuevamente.", "error");
+        }
+      } catch (error) {
+        Swal.fire("Error", "Error de red. Por favor, intente nuevamente.", "error");
+      }
+    });
+
+// End Asignar Tutor block
+
+// Start register Student code block
   const form = document.getElementById('estuForm');
   if (form) {
       const registerUrl = document.getElementById('form-container').getAttribute('data-register-url');
@@ -53,6 +150,9 @@ document.body.addEventListener('htmx:afterOnLoad', function(event) {
       console.log('Form with ID "estuForm" not found!');
   }
 
+//   End register student block
+
+// Start Register teacher code block
 
   const formProfe = document.getElementById('profeForm');
   if (formProfe) {
@@ -108,7 +208,9 @@ document.body.addEventListener('htmx:afterOnLoad', function(event) {
       console.log('Form with ID "profeForm" not found!');
   }
 
+// end Register profesor block
 
+// Start Register Mono code block
   const formMono = document.getElementById('monoForm');
   if (formMono) {
       const profeRegisterUrl = document.getElementById('form-container').getAttribute('data-register-url');
@@ -163,6 +265,9 @@ document.body.addEventListener('htmx:afterOnLoad', function(event) {
       console.log('Form with ID "monoForm" not found!');
   }
 
+//   End Register Mono Form
+
+// Start delete mono code block
 
   const deleteMonoForm = document.getElementById("deleteMonoForm");
   console.log(deleteMonoForm)
@@ -219,7 +324,11 @@ document.body.addEventListener('htmx:afterOnLoad', function(event) {
   } else {
       console.log('Form with ID "deleteMonoForm" not found!');
   }
-    
+
+
+//   End delete mono block
+
+// Start delete student block
   const deleteEstuForm = document.getElementById("deleteEstuForm");
   console.log(deleteEstuForm);
   if (deleteEstuForm) {
@@ -281,6 +390,10 @@ document.body.addEventListener('htmx:afterOnLoad', function(event) {
   } else {
       console.log('Form with ID "deleteEstuForm" not found!');
   }
+
+// End delete Student block
+
+// Start delete Profesor block
 
   const deleteProfForm = document.getElementById("deleteProfForm");
   console.log(deleteProfForm);
@@ -344,6 +457,9 @@ document.body.addEventListener('htmx:afterOnLoad', function(event) {
       console.log('Form with ID "deleteProfForm" not found!');
   }
 
+// End delete profesor block
+
+// Start assign students code block
 
 
   const assignButtons = document.querySelectorAll(".btn-success");
@@ -403,67 +519,12 @@ assignButton.addEventListener("click", async function () {
       });
     }
   });
-  const assignTutorButtons = document.querySelectorAll(".btn-success");
-  const tutorIdField = document.getElementById("tutortId");
-  const tutorDropdown = document.getElementById("tutorDropdown");
-  const assignTutorButton = document.getElementById("assigntutorButton");
-  const addTutorUrl = document.getElementById('deleteProfForm').getAttribute('add-tutor-url');
-
-assignTutorButtons.forEach(button => {
-    button.addEventListener("click", function () {
-    const tutorId = this.closest("tr").querySelector("td:first-child").textContent;
-    tutorIdField.value = tutorId;
-    });
-});
-
-
-assignTutorButton.addEventListener("click", async function () {
-    const tutorId = tutorIdField.value;
-    const monoId = tutorDropdown.value;
-
-    try {
-    const response = await fetch(addTutorUrl, {
-        method: "POST",
-        headers: {
-        "X-CSRFToken": csrfToken,
-        "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ student_id: tutorId, mono_id: monoId })
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-        Swal.fire({
-        title: '¡Éxito!',
-        text: 'Monografía asignada exitosamente',
-        icon: 'success',
-        confirmButtonText: 'OK'
-        });
-
-        $('#exampleModal').modal('hide');
-    } else {
-        Swal.fire({
-        title: 'Error',
-        text: data.error || 'Hubo un problema. Por favor, intente nuevamente.',
-        icon: 'error',
-        confirmButtonText: 'OK'
-        });
-    }
-    } catch (error) {
-    Swal.fire({
-        title: 'Error',
-        text: 'Error de red. Por favor, intente nuevamente.',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-    }
-  });
 
 
   
 });
 
+// End assign students block
 
 
 

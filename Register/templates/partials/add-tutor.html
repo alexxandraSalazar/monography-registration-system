@@ -18,11 +18,11 @@
             {% endfor %}
           </select>
         </div>
-        <input type="hidden" id="tutorId" value="">
+        <input type="hidden" id="profesorIdField" value="">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary" id="assigntutorButton">Asignar</button>
+        <button type="button" class="btn btn-primary" id="assignTutorButton">Asignar</button>
       </div>
     </div>
   </div>
@@ -47,9 +47,13 @@
         <td>{{profesor.id}}</td>
         <td>{{profesor.nombres}} {{profesor.apellidos}}</td>
         <td>
-          <button class="btn btn-success mr-2" data-toggle="modal" data-target="#tutorModal" type="button">Asignar monografía</button>
-          <form id="deleteProfForm" add-tutor-url="{% url 'asignarTutor' %}" data-register-url="{% url 'deleteProf' id=profesor.id %}" method="post" style="display:inline;">
-            <input type="hidden" name="id" value="{{ profesor.id }}" />
+          <button class="btn btn-success mr-2 assign-tutor-btn" 
+          data-add-tutor-url="{% url 'asignarTutor' %}" 
+          data-toggle="modal" 
+          data-target="#tutorModal" 
+          type="button">Asignar monografía</button>  
+          <form id="deleteProfForm" data-register-url="{% url 'deleteProf' id=profesor.id %}" method="post" style="display:inline;">
+            <input type="hidden" name="id" value="{{ profesor.id }}">
             {% csrf_token %}
             <button class="btn btn-danger mt-2">Eliminar</button>
           </form>
@@ -64,5 +68,49 @@
   </table>
   
 </div>
-
 {% endblock %}
+<!-- <script>
+  document.addEventListener('htmx:afterOnLoad', function(event){
+    const profesorIdField = document.getElementById("profesorIdField");
+    const tutorDropdown = document.getElementById("tutorDropdown");
+    const assignTutorButton = document.getElementById("assignTutorButton");
+    
+    let addTutorUrl = "";
+    
+
+    document.querySelectorAll(".assign-tutor-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        profesorIdField.value = button.closest("tr").querySelector("td:first-child").textContent;
+        addTutorUrl = button.getAttribute("data-add-tutor-url");
+      });
+    });
+    
+    assignTutorButton.addEventListener("click", async () => {
+      const profesorId = profesorIdField.value;
+      const monoId = tutorDropdown.value;
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+      try {
+        const response = await fetch(addTutorUrl, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrfToken,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ profesor_id: profesorId, monografia_id: monoId })
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+          Swal.fire("¡Éxito!", "Monografía asignada exitosamente", "success");
+          $('#tutorModal').modal('hide');
+        } else {
+          Swal.fire("Error", data.error || "Hubo un problema. Por favor, intente nuevamente.", "error");
+        }
+      } catch (error) {
+        Swal.fire("Error", "Error de red. Por favor, intente nuevamente.", "error");
+      }
+    });
+  });
+</script> -->

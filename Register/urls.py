@@ -14,6 +14,7 @@ urlpatterns = [
     path('delete-Estu/<int:id>', views.deleteEstu, name='deleteEstu'),
     path('delete-Prof/<int:id>', views.deleteProf, name='deleteProf'),
     path('asignar-estudiante', views.AsignarEstudiante, name="asignarEstudiante"),
-    path('asignar-tutor', views.AsignarTutor, name="asignarTutor"),
+    path('asignar-tutor', views.asignarTutor, name="asignarTutor"),
+    path('asignar-Jurado', views.asignarJurado, name="asignarJurado"),
 
 ]

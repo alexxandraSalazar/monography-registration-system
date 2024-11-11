@@ -1,9 +1,8 @@
 {% block content %}
-<div class="title"  data-addProf-url="{{ addProfUrl }}">
-    <h1>Añadir los jurados a una monografía</h1>
+<div class="title" data-addJurado-url="{{ addJuradoUrl }}">
+  <h1>Añadir los jurados a una monografía</h1>
 </div>
 <div class="container">
-
   <table class="table">
     <thead>
       <tr>
@@ -15,14 +14,18 @@
     <tbody>
       {% for profesor in profesores %}
       <tr>
-        <td>{{profesor.id}}</td>
-        <td>{{profesor.nombres}} {{profesor.apellidos}}</td>
+        <td>{{ profesor.id }}</td>
+        <td>{{ profesor.nombres }} {{ profesor.apellidos }}</td>
         <td>
-          <button class="btn btn-success mr-2" data-toggle="modal" data-target="#exampleModal" type="button">Asignar monografía</button>
+          <button id="urlId" class="btn btn-success mr-2 assign-jurado-btn" 
+            data-add-jurado-url="{% url 'asignarJurado' %}" 
+            data-toggle="modal" 
+            data-target="#exampleModal" 
+            type="button">Asignar monografía</button>  
           <form id="deleteProfForm" data-register-url="{% url 'deleteProf' id=profesor.id %}" method="post" style="display:inline;">
             <input type="hidden" name="id" value="{{ profesor.id }}">
             {% csrf_token %}
-            <button class="btn btn-danger mt-2" >Eliminar</button>
+            <button class="btn btn-danger mt-2">Eliminar</button>
           </form>
         </td>
       </tr>
@@ -33,6 +36,36 @@
       {% endfor %}
     </tbody>
   </table>
-  
 </div>
+
+<!-- Modal para asignar jurado -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Asignar jurado a Monografía</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="monografiaDropdown">Selecciona una monografía</label>
+          <select class="form-control" id="monografiaDropdown">
+            {% for mono in monos %}
+            <option value="{{ mono.id }}">{{ mono.titulo }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <input type="hidden" id="juradoIdField" value="">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="assignJuradoButton">Asignar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end modal -->
+
 {% endblock %}
