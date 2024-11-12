@@ -187,14 +187,24 @@ def AsignarEstudiante(request):
             estudiante = Estudiante.objects.get(id=student_id)
             monografia = Monografia.objects.get(id=mono_id)
             
-            estudiante.monografia = monografia
-            estudiante.save()  
+            if estudiante.monografia == monografia:
+                return JsonResponse({"success": False, "error": "El estudiante ya está asignado a esta monografía"})
 
-            return JsonResponse({"success": True})
+            estudiantes_asignados = Estudiante.objects.filter(monografia=monografia).count()
+
+            if estudiantes_asignados >= 3:
+                return JsonResponse({"success": False, "error": "La monografía ya tiene el máximo de 3 estudiantes asignados"})
+
+            estudiante.monografia = monografia
+            estudiante.save()
+
+            return JsonResponse({"success": True, "message": "Estudiante asignado correctamente"})
+        
         except Estudiante.DoesNotExist:
             return JsonResponse({"success": False, "error": "Estudiante no encontrado"})
         except Monografia.DoesNotExist:
             return JsonResponse({"success": False, "error": "Monografía no encontrada"})
+    
     return JsonResponse({"success": False, "error": "Método no permitido"})
 
 
@@ -208,15 +218,27 @@ def asignarTutor(request):
         try:
             profesor = Profesor.objects.get(id=profesor_id)
             monografia = Monografia.objects.get(id=monografia_id)
-            rol, created = Rol.objects.get_or_create(nombre="Tutor")
+            rol_tutor, _ = Rol.objects.get_or_create(nombre="Tutor")
+            rol_jurado, _ = Rol.objects.get_or_create(nombre="Jurado")
 
-            ProfesorMonografia.objects.create(profesor=profesor, monografia=monografia, rol=rol)
+            if ProfesorMonografia.objects.filter(profesor=profesor, monografia=monografia, rol=rol_tutor).exists():
+                return JsonResponse({"success": False, "error": "El profesor ya está asignado como tutor de esta monografía"})
+
+            if ProfesorMonografia.objects.filter(monografia=monografia, rol=rol_tutor).exists():
+                return JsonResponse({"success": False, "error": "La monografía ya tiene un tutor asignado"})
+
+            if ProfesorMonografia.objects.filter(profesor=profesor, monografia=monografia, rol=rol_jurado).exists():
+                return JsonResponse({"success": False, "error": "El profesor ya está asignado como jurado y no puede ser tutor"})
+            
+            ProfesorMonografia.objects.create(profesor=profesor, monografia=monografia, rol=rol_tutor)
 
             return JsonResponse({"success": True, "message": "Tutor asignado correctamente"})
+        
         except Profesor.DoesNotExist:
             return JsonResponse({"success": False, "error": "Profesor no encontrado"})
         except Monografia.DoesNotExist:
             return JsonResponse({"success": False, "error": "Monografía no encontrada"})
+    
     return JsonResponse({"success": False, "error": "Método no permitido"})
 
 
@@ -230,12 +252,23 @@ def asignarJurado(request):
         try:
             jurado = Profesor.objects.get(id=jurado_id)
             monografia = Monografia.objects.get(id=monografia_id)
-            rol, created = Rol.objects.get_or_create(nombre="Jurado")
 
-            ProfesorMonografia.objects.create(profesor=jurado, monografia=monografia, rol=rol)
+            rol_jurado, _ = Rol.objects.get_or_create(nombre="Jurado")
+            rol_tutor, _ = Rol.objects.get_or_create(nombre="Tutor")
+            if ProfesorMonografia.objects.filter(profesor=jurado, monografia=monografia, rol=rol_tutor).exists():
+                return JsonResponse({"success": False, "error": "El profesor ya está asignado como tutor y no puede ser jurado"})
+            if ProfesorMonografia.objects.filter(profesor=jurado, monografia=monografia, rol=rol_jurado).exists():
+                return JsonResponse({"success": False, "error": "El profesor ya está asignado como jurado en esta monografía"})
+            if ProfesorMonografia.objects.filter(monografia=monografia, rol=rol_jurado).count() >= 3:
+                return JsonResponse({"success": False, "error": "La monografía ya tiene tres jurados asignados"})
+
+            ProfesorMonografia.objects.create(profesor=jurado, monografia=monografia, rol=rol_jurado)
+
             return JsonResponse({"success": True, "message": "Jurado asignado correctamente"})
+        
         except Profesor.DoesNotExist:
             return JsonResponse({"success": False, "error": "Profesor no encontrado"})
         except Monografia.DoesNotExist:
             return JsonResponse({"success": False, "error": "Monografía no encontrada"})
+    
     return JsonResponse({"success": False, "error": "Método no permitido"})
