@@ -7,14 +7,19 @@ from .models import Monografia, Estudiante, Profesor, Rol, ProfesorMonografia
 
 # Create your views here.
 def index(request):
+    # Usamos prefetch_related para traer los estudiantes y los profesores relacionados
+    monos = Monografia.objects.prefetch_related(
+        'estudiante_set',  # Trae todos los estudiantes relacionados con la monografía
+        'professormonografia_set__profesor'  # Trae los profesores relacionados a través de la tabla puente
+    )
+
     index_url = reverse('index')
     addEstuUrl = reverse('addEstu')
-    monos = Monografia.objects.all()
-
+    
     if request.htmx:
         if request.method == "GET":
             return render(request, "partials/table-mono.html", {'monos': monos, 'index_url': index_url})
-    
+
     if request.method == "GET":
         return render(request, 'Register/index.html', {'monos': monos, 'index_url': index_url, 'addEstuUrl': addEstuUrl})
 

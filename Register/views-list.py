@@ -270,119 +270,116 @@ def deleteEstu(request, id):
 
 # Asigna un estudiante a una monografía
 def AsignarEstudiante(request):
-    if request.method == "POST":
-        # Carga los datos enviados en la solicitud POST
-        data = json.loads(request.body)
-        student_id = data.get("student_id")
-        mono_id = data.get("mono_id")
+    if request.method == "POST":  # Validar que el método sea POST
+        data = json.loads(request.body)  # Obtener datos del cuerpo de la solicitud
+        student_id = data.get("student_id")  # ID del estudiante
+        mono_id = data.get("mono_id")       # ID de la monografía
 
-        try:
-            # Buscar el estudiante y la monografía por sus respectivos IDs
-            estudiante = next((e for e in estudiantes if e['id'] == student_id), None)
-            monografia = next((m for m in monografias if m['id'] == mono_id), None)
+        # Buscar estudiante y monografía en las listas simuladas
+        estudiante = next((e for e in estudiantes if e["id"] == student_id), None)
+        monografia = next((m for m in monografias if m["id"] == mono_id), None)
 
-            # Si tanto el estudiante como la monografía existen, se asignan
-            if estudiante and monografia:
-                estudiante['monografia'] = monografia
-                return JsonResponse({"success": True, "message": "Estudiante asignado a la monografía correctamente"})
-            
-            # Si no se encuentra el estudiante o la monografía, se devuelve un error
-            elif not estudiante:
-                return JsonResponse({"success": False, "error": "Estudiante no encontrado"})
-            elif not monografia:
-                return JsonResponse({"success": False, "error": "Monografía no encontrada"})
+        # Validar que el estudiante exista
+        if not estudiante:
+            return JsonResponse({"success": False, "error": "Estudiante no encontrado"})
         
-        # Si ocurre un error durante el proceso de asignación, se captura y devuelve un mensaje de error
-        except Exception as e:
-            return JsonResponse({"success": False, "error": f"Error: {str(e)}"})
-    
-    # Si el método no es POST, se devuelve un error
+        # Validar que la monografía exista
+        if not monografia:
+            return JsonResponse({"success": False, "error": "Monografía no encontrada"})
+
+        # Verificar si el estudiante ya está asignado a esta monografía
+        if estudiante["monografia_id"] == mono_id:
+            return JsonResponse({"success": False, "error": "El estudiante ya está asignado a esta monografía"})
+
+        # Contar los estudiantes ya asignados a esta monografía
+        estudiantes_asignados = [e for e in estudiantes if e["monografia_id"] == mono_id]
+        if len(estudiantes_asignados) >= 3:  # Limitar a máximo 3 estudiantes
+            return JsonResponse({"success": False, "error": "La monografía ya tiene el máximo de 3 estudiantes asignados"})
+
+        # Asignar la monografía al estudiante
+        estudiante["monografia_id"] = mono_id
+        return JsonResponse({"success": True, "message": "Estudiante asignado correctamente"})
+
     return JsonResponse({"success": False, "error": "Método no permitido"})
 
 
 # Asigna un tutor a una monografía
 def asignarTutor(request):
-    if request.method == "POST":
-        print("post asignar tutor")
+    if request.method == "POST":  # Validar que el método sea POST
+        data = json.loads(request.body)  # Obtener datos del cuerpo de la solicitud
+        profesor_id = data.get("profesor_id")  # ID del profesor
+        monografia_id = data.get("monografia_id")  # ID de la monografía
+
+        # Buscar profesor y monografía en las listas simuladas
+        profesor = next((p for p in profesores if p["id"] == profesor_id), None)
+        monografia = next((m for m in monografias if m["id"] == monografia_id), None)
+
+        # Validar que el profesor exista
+        if not profesor:
+            return JsonResponse({"success": False, "error": "Profesor no encontrado"})
         
-        # Carga los datos enviados en la solicitud POST
-        data = json.loads(request.body)
-        profesor_id = data.get("profesor_id")
-        monografia_id = data.get("monografia_id")
+        # Validar que la monografía exista
+        if not monografia:
+            return JsonResponse({"success": False, "error": "Monografía no encontrada"})
 
-        try:
-            # Buscar el profesor, la monografía y el rol de "Tutor"
-            profesor = next((p for p in profesores if p['id'] == profesor_id), None)
-            monografia = next((m for m in monografias if m['id'] == monografia_id), None)
-            rol = next((r for r in roles if r['nombre'] == "Tutor"), None)
+        # Verificar si el profesor ya está asignado como tutor de esta monografía
+        if any(a["profesor_id"] == profesor_id and a["rol"] == "Tutor" for a in profesor_monografia):
+            return JsonResponse({"success": False, "error": "El profesor ya está asignado como tutor de esta monografía"})
 
-            # Si el rol "Tutor" no existe, se crea y se agrega a la lista de roles
-            if not rol:
-                rol = {'nombre': "Tutor"}
-                roles.append(rol)
+        # Verificar si la monografía ya tiene un tutor asignado
+        if any(a["monografia_id"] == monografia_id and a["rol"] == "Tutor" for a in profesor_monografia):
+            return JsonResponse({"success": False, "error": "La monografía ya tiene un tutor asignado"})
 
-            # Si tanto el profesor como la monografía existen, se asigna el rol "Tutor" al profesor
-            if profesor and monografia:
-                profesor_monografia.append({
-                    'profesor': profesor,
-                    'monografia': monografia,
-                    'rol': rol
-                })
-                return JsonResponse({"success": True, "message": "Tutor asignado correctamente"})
-            
-            # Si no se encuentra el profesor o la monografía, se devuelve un error
-            elif not profesor:
-                return JsonResponse({"success": False, "error": "Profesor no encontrado"})
-            elif not monografia:
-                return JsonResponse({"success": False, "error": "Monografía no encontrada"})
-        
-        # Si ocurre un error durante el proceso de asignación, se captura y devuelve un mensaje de error
-        except Exception as e:
-            return JsonResponse({"success": False, "error": f"Error: {str(e)}"})
+        # Asignar el profesor como tutor de la monografía
+        profesor_monografia.append({
+            "profesor_id": profesor_id,
+            "monografia_id": monografia_id,
+            "rol": "Tutor"
+        })
 
-    # Si el método no es POST, se devuelve un error
+        return JsonResponse({"success": True, "message": "Tutor asignado correctamente"})
+
     return JsonResponse({"success": False, "error": "Método no permitido"})
 
 
 # Asigna un jurado a una monografía
 def asignarJurado(request):
-    if request.method == "POST":
-        print("post asignar jurado")
+    if request.method == "POST":  # Validar que el método sea POST
+        data = json.loads(request.body)  # Obtener datos del cuerpo de la solicitud
+        jurado_id = data.get("jurado_id")  # ID del jurado
+        monografia_id = data.get("monografia_id")  # ID de la monografía
+
+        # Buscar jurado y monografía en las listas simuladas
+        jurado = next((p for p in profesores if p["id"] == jurado_id), None)
+        monografia = next((m for m in monografias if m["id"] == monografia_id), None)
+
+        # Validar que el jurado exista
+        if not jurado:
+            return JsonResponse({"success": False, "error": "Profesor no encontrado"})
         
-        # Carga los datos enviados en la solicitud POST
-        data = json.loads(request.body)
-        jurado_id = data.get("jurado_id")
-        monografia_id = data.get("monografia_id")
+        # Validar que la monografía exista
+        if not monografia:
+            return JsonResponse({"success": False, "error": "Monografía no encontrada"})
 
-        try:
-            # Buscar el jurado, la monografía y el rol de "Jurado"
-            jurado = next((p for p in profesores if p['id'] == jurado_id), None)
-            monografia = next((m for m in monografias if m['id'] == monografia_id), None)
-            rol = next((r for r in roles if r['nombre'] == "Jurado"), None)
+        # Verificar si el profesor ya está asignado como tutor
+        if any(a["profesor_id"] == jurado_id and a["rol"] == "Tutor" for a in profesor_monografia):
+            return JsonResponse({"success": False, "error": "El profesor ya está asignado como tutor y no puede ser jurado"})
 
-            # Si el rol "Jurado" no existe, se crea y se agrega a la lista de roles
-            if not rol:
-                rol = {'nombre': "Jurado"}
-                roles.append(rol)
+        # Verificar si el profesor ya está asignado como jurado de esta monografía
+        if any(a["profesor_id"] == jurado_id and a["rol"] == "Jurado" and a["monografia_id"] == monografia_id for a in profesor_monografia):
+            return JsonResponse({"success": False, "error": "El profesor ya está asignado como jurado en esta monografía"})
 
-            # Si tanto el jurado como la monografía existen, se asigna el rol "Jurado" al jurado
-            if jurado and monografia:
-                profesor_monografia.append({
-                    'profesor': jurado,
-                    'monografia': monografia,
-                    'rol': rol
-                })
-                return JsonResponse({"success": True, "message": "Jurado asignado correctamente"})
-            
-            # Si no se encuentra el jurado o la monografía, se devuelve un error
-            elif not jurado:
-                return JsonResponse({"success": False, "error": "Jurado no encontrado"})
-            elif not monografia:
-                return JsonResponse({"success": False, "error": "Monografía no encontrada"})
-        
-        # Si ocurre un error durante el proceso de asignación, se captura y devuelve un mensaje de error
-        except Exception as e:
-            return JsonResponse({"success": False, "error": f"Error: {str(e)}"})
+        # Limitar a un máximo de 3 jurados por monografía
+        if sum(1 for a in profesor_monografia if a["monografia_id"] == monografia_id and a["rol"] == "Jurado") >= 3:
+            return JsonResponse({"success": False, "error": "La monografía ya tiene tres jurados asignados"})
 
-    # Si el método no es POST, se devuelve un error
+        # Asignar el profesor como jurado de la monografía
+        profesor_monografia.append({
+            "profesor_id": jurado_id,
+            "monografia_id": monografia_id,
+            "rol": "Jurado"
+        })
+
+        return JsonResponse({"success": True, "message": "Jurado asignado correctamente"})
+
     return JsonResponse({"success": False, "error": "Método no permitido"})

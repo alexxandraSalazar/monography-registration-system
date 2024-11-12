@@ -43,7 +43,7 @@ class Estudiante(models.Model):
 
 # Esta es la tabla puente
 class ProfesorMonografia(models.Model):
-    monografia = models.ForeignKey(Monografia, on_delete=models.CASCADE)
+    monografia = models.ForeignKey(Monografia, on_delete=models.CASCADE, related_name='profesores')
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
     rol = models.ForeignKey(Rol, on_delete=models.CASCADE)
 
