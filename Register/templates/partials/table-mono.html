@@ -46,18 +46,12 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <p><strong>Estudiantes:</strong>
-                                        {% for estudiante in mono.estudiante_set.all %}
-                                            <p>{{ estudiante.nombres }} {{ estudiante.apellidos }}</p>
-                                        {% empty %}
-                                            <p>No hay estudiantes asignados.</p>
-                                        {% endfor %}
-                                    </p>
+                                    <p><strong>Estudiante:</strong> {% if mono.estudiante %}{{ mono.estudiante.nombres }} {{ mono.estudiante.apellidos }}{% else %}this is gonna show the student assign{% endif %}</p>
                                     <p><strong>Profesores asignados:</strong></p>
-                                    {% for profesor_monografia in mono.profesor_monografia_set.all %}
+                                    {% for profesor_monografia in mono.profesores %}
                                         <p>{{ profesor_monografia.profesor.nombres }} {{ profesor_monografia.profesor.apellidos }} - {{ profesor_monografia.rol.nombre }}</p>
                                     {% empty %}
-                                        <p>No hay profesores asignados.</p>
+                                        <p>this is gonna show the teacher assign</p>
                                     {% endfor %}
                                 </div>
                                 <div class="modal-footer">
@@ -66,8 +60,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    
                 {% empty %}
                     <tr>
                         <td colspan="10" class="text-center align-middle">No hay monografías registradas</td>
