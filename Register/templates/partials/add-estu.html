@@ -1,6 +1,6 @@
 {% block content %}
 <!-- start modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -26,13 +26,13 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 <!-- end modal -->
 
 
 
 <div class="title" data-addEstu-url="{{ addEstuUrl }}">
-    <h1>Añadir a los estudiantes la monografía</h1>
+    <h1>Estudiantes Registrados</h1>
 </div>
 <div class="container">
 
@@ -50,7 +50,7 @@
         <td>{{student.id}}</td>
         <td>{{student.nombres}} {{student.apellidos}}</td>
         <td>
-          <button id="assignButton" class="btn btn-success mr-2" data-toggle="modal" data-target="#exampleModal" type="button">Asignar monografía</button>
+          <!-- <button id="assignButton" class="btn btn-success mr-2" data-toggle="modal" data-target="#exampleModal" type="button">Asignar monografía</button> -->
           <form id="deleteEstuForm" add-estu-url="{% url 'asignarEstudiante' %}" data-register-url="{% url 'deleteEstu' id=student.id %}" method="post" style="display:inline;">
             <input type="hidden" name="id" value="{{ student.id }}" />
               {% csrf_token %}

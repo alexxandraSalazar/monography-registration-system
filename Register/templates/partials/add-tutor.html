@@ -1,6 +1,6 @@
 {% block content %}
 <!-- start modal -->
-<div class="modal fade" id="tutorModal" tabindex="-1" role="dialog" aria-labelledby="tutorModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="tutorModal" tabindex="-1" role="dialog" aria-labelledby="tutorModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -26,10 +26,10 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 <!-- end modal -->
 <div class="title"  data-addProf-url="{{ addProfUrl }}">
-    <h1>Añadir un tutor a una monografía</h1>
+    <h1>Profesores Registrados</h1>
 </div>
 <div class="container">
 
@@ -47,11 +47,11 @@
         <td>{{profesor.id}}</td>
         <td>{{profesor.nombres}} {{profesor.apellidos}}</td>
         <td>
-          <button class="btn btn-success mr-2 assign-tutor-btn" 
+          <!-- <button class="btn btn-success mr-2 assign-tutor-btn" 
           data-add-tutor-url="{% url 'asignarTutor' %}" 
           data-toggle="modal" 
           data-target="#tutorModal" 
-          type="button">Asignar monografía</button>  
+          type="button">Asignar monografía</button>   -->
           <form id="deleteProfForm" data-register-url="{% url 'deleteProf' id=profesor.id %}" method="post" style="display:inline;">
             <input type="hidden" name="id" value="{{ profesor.id }}">
             {% csrf_token %}

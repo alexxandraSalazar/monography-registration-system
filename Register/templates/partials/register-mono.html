@@ -3,45 +3,114 @@
 <div class="title">
     <h1>Registrar una Monografía</h1>
 </div>
+
 <div class="container">
-  <div id="form-container" data-register-url="{% url 'registerMono' %}">
-    <form id="monoForm" method="post" >
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="inputTitulo">Título</label>
-        <input name="titulo" type="text" class="form-control" id="inputTitulo" placeholder="Título de la monografía">
-      </div>
-      <div class="form-row">
-        <div class="form-group col-md-6">
-          <label for="inputFechaDefensa">Fecha de Defensa</label>
-          <input name="fecha_defensa" type="date" class="form-control" id="inputFechaDefensa">
-        </div>
-        <div class="form-group col-md-6">
-          <label for="inputNotaDefensa">Nota de Defensa</label>
-          <input name="nota_defensa" type="number" class="form-control" id="inputNotaDefensa" placeholder="Nota de la defensa" min="0" max="100">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group col-md-6">
-          <label for="inputTiempoOtorgado">Tiempo Otorgado</label>
-          <input name="tiempo_otorgado" type="text" class="form-control" id="inputTiempoOtorgado" placeholder="Ej. 45">
-        </div>
-        <div class="form-group col-md-6">
-          <label for="inputTiempoDefensa">Tiempo de Defensa</label>
-          <input name="tiempo_defensa" type="text" class="form-control" id="inputTiempoDefensa" placeholder="Ej. 12">
-        </div>
-      </div>
-      <div class="form-group text-center">
-        <label for="inputTiempoPregunta">Tiempo de Pregunta</label>
-        <input name="tiempo_pregunta" type="text" class="form-control" id="inputTiempoPregunta" placeholder="Ej. 30" style="max-width: 50%; margin: 0 auto;">
-      </div>
-      
-      <div class="d-flex justify-content-center">
-        <button type="submit" class="btn btn-primary">Registrar Monografía</button>
-      </div>
-      
-      
-  </form>
+    <div id="form-container" data-register-url="{% url 'registerMono' %}">
+        <form id="monoForm" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="inputTitulo">Título</label>
+                <input name="titulo" type="text" class="form-control" id="inputTitulo" placeholder="Título de la monografía">
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputFechaDefensa">Fecha de Defensa</label>
+                    <input name="fecha_defensa" type="date" class="form-control" id="inputFechaDefensa">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputNotaDefensa">Nota de Defensa</label>
+                    <input name="nota_defensa" type="number" class="form-control" id="inputNotaDefensa" placeholder="Nota de la defensa" min="0" max="100">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputTiempoOtorgado">Tiempo Otorgado</label>
+                    <input name="tiempo_otorgado" type="text" class="form-control" id="inputTiempoOtorgado" placeholder="Ej. 45">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputTiempoDefensa">Tiempo de Defensa</label>
+                    <input name="tiempo_defensa" type="text" class="form-control" id="inputTiempoDefensa" placeholder="Ej. 12">
+                </div>
+            </div>
+            <div class="form-group text-center">
+                <label for="inputTiempoPregunta">Tiempo de Pregunta</label>
+                <input name="tiempo_pregunta" type="text" class="form-control" id="inputTiempoPregunta" placeholder="Ej. 30" style="max-width: 50%; margin: 0 auto;">
+            </div>
+
+            <!-- Dropdowns de jurados -->
+            <div class="form-group">
+                <label for="inputJurado1">Jurado 1</label>
+                <select name="jurado1" id="inputJurado1" class="form-control">
+                    <option value="">Seleccione un jurado</option>
+                    {% for profesor in professors %}
+                        <option value="{{ profesor.id }}">{{ profesor.nombres }} {{ profesor.apellidos }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="inputJurado2">Jurado 2</label>
+                <select name="jurado2" id="inputJurado2" class="form-control">
+                    <option value="">Seleccione un jurado</option>
+                    {% for profesor in professors %}
+                        <option value="{{ profesor.id }}">{{ profesor.nombres }} {{ profesor.apellidos }} </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="inputJurado3">Jurado 3</label>
+                <select name="jurado3" id="inputJurado3" class="form-control">
+                    <option value="">Seleccione un jurado</option>
+                    {% for profesor in professors %}
+                        <option value="{{ profesor.id }}">{{ profesor.nombres }} {{ profesor.apellidos }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Dropdown de tutor -->
+            <div class="form-group">
+                <label for="inputTutor">Tutor</label>
+                <select name="tutor" id="inputTutor" class="form-control">
+                    <option value="">Seleccione un tutor</option>
+                    {% for profesor in professors %}
+                        <option value="{{ profesor.id }}">{{ profesor.nombres }} {{ profesor.apellidos }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Dropdowns de estudiantes -->
+            <div class="form-group">
+                <label for="inputEstudiante1">Estudiante 1</label>
+                <select name="estudiante1" id="inputEstudiante1" class="form-control">
+                    <option value="">Seleccione un estudiante</option>
+                    {% for student in students %}
+                        <option value="{{ student.id }}">{{ student.nombres }} {{ student.apellidos }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="inputEstudiante2">Estudiante 2</label>
+                <select name="estudiante2" id="inputEstudiante2" class="form-control">
+                    <option value="">Seleccione un estudiante</option>
+                    {% for student in students %}
+                        <option value="{{ student.id }}">{{ student.nombres }} {{ student.apellidos }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="inputEstudiante3">Estudiante 3</label>
+                <select name="estudiante3" id="inputEstudiante3" class="form-control">
+                    <option value="">Seleccione un estudiante</option>
+                    {% for student in students %}
+                        <option value="{{ student.id }}">{{ student.nombres }} {{ student.apellidos }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary">Registrar Monografía</button>
+            </div>
+        </form>
+    </div>
 </div>
-</div>
+
 {% endblock %}

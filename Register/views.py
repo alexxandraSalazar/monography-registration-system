@@ -46,7 +46,11 @@ def registerMono(request):
             return JsonResponse({'status': 'error', 'message': 'Error al registrar la Monografía'}, status=500)
         
     elif request.method == 'GET' and request.htmx:
-        return render(request, "partials/register-mono.html")
+        students = Estudiante.objects.all()
+        professors = Profesor.objects.all()
+        print(professors)
+        print(students)
+        return render(request, "partials/register-mono.html",{'students':students, 'professors': professors})
     return render(request,'Register/layout.html')
 
 def registerEstu(request):
