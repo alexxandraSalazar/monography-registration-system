@@ -30,28 +30,68 @@ def registerMono(request):
             tiempo_otorgado = request.POST.get('tiempo_otorgado')
             tiempo_defensa = request.POST.get('tiempo_defensa')
             tiempo_pregunta = request.POST.get('tiempo_pregunta')
-                    
-            Monografia.objects.create(
-                titulo = titulo,
-                fecha_defensa = fecha_defensa,
-                nota_defensa = nota_defensa,
-                tiempo_otorgado = tiempo_otorgado,
-                tiempo_defensa = tiempo_defensa,
-                tiempo_pregunta = tiempo_pregunta
+
+            jurado_ids = list(filter(None, [request.POST.get('jurado1'), request.POST.get('jurado2'), request.POST.get('jurado3')]))
+            tutor_id = request.POST.get('tutor')
+            estudiante_ids = list(filter(None, [
+                request.POST.get('estudiante1'), 
+                request.POST.get('estudiante2'), 
+                request.POST.get('estudiante3')
+            ]))
+
+            if len(jurado_ids) != len(set(jurado_ids)):
+                return JsonResponse({'status': 'error', 'message': 'Error: No se pueden repetir jurados en la monografía.'}, status=400)
+            if tutor_id in jurado_ids:
+                return JsonResponse({'status': 'error', 'message': 'Error: El tutor no puede ser también jurado.'}, status=400)
+            if len(estudiante_ids) != len(set(estudiante_ids)):
+                return JsonResponse({'status': 'error', 'message': 'Error: No se pueden repetir estudiantes en la monografía.'}, status=400)
+            if not (1 <= len(estudiante_ids) <= 3):
+                return JsonResponse({'status': 'error', 'message': 'Error: Debe asignarse entre uno y tres estudiantes a la monografía.'}, status=400)
+
+            jurado_role = Rol.objects.get(nombre="Jurado")
+            tutor_role = Rol.objects.get(nombre="Tutor")
+
+            monografia = Monografia.objects.create(
+                titulo=titulo,
+                fecha_defensa=fecha_defensa,
+                nota_defensa=nota_defensa,
+                tiempo_otorgado=tiempo_otorgado,
+                tiempo_defensa=tiempo_defensa,
+                tiempo_pregunta=tiempo_pregunta
             )
-        
+
+            for jurado_id in jurado_ids:
+                profesor = Profesor.objects.get(id=jurado_id)
+                ProfesorMonografia.objects.create(monografia=monografia, profesor=profesor, rol=jurado_role)
+
+            if tutor_id:
+                tutor = Profesor.objects.get(id=tutor_id)
+                ProfesorMonografia.objects.create(monografia=monografia, profesor=tutor, rol=tutor_role)
+
+            for estudiante_id in estudiante_ids:
+                estudiante = Estudiante.objects.get(id=estudiante_id)
+                estudiante.monografia = monografia
+                estudiante.save()
+
             return JsonResponse({'status': 'success', 'message': 'Monografía registrada exitosamente'}, status=200)
-        
+
+        except Rol.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Error: Rol no encontrado en la base de datos. Asegúrate de que los roles existen.'}, status=500)
+        except Profesor.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Error: Profesor no encontrado en la base de datos.'}, status=500)
+        except Estudiante.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Error: Estudiante no encontrado en la base de datos.'}, status=500)
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': 'Error al registrar la Monografía'}, status=500)
-        
+            return JsonResponse({'status': 'error', 'message': f'Error al registrar la Monografía: {str(e)}'}, status=500)
+
     elif request.method == 'GET' and request.htmx:
         students = Estudiante.objects.all()
         professors = Profesor.objects.all()
-        print(professors)
-        print(students)
-        return render(request, "partials/register-mono.html",{'students':students, 'professors': professors})
-    return render(request,'Register/layout.html')
+        return render(request, "partials/register-mono.html", {'students': students, 'professors': professors})
+
+    return render(request, 'Register/layout.html')
+
+
 
 def registerEstu(request):
     if request.method == "POST":
