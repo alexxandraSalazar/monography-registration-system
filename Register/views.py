@@ -6,10 +6,11 @@ from .models import Monografia, Estudiante, Profesor, Rol, ProfesorMonografia
 
 
 # Create your views here.
+
 def index(request):
     index_url = reverse('index')
     addEstuUrl = reverse('addEstu')
-    monos = Monografia.objects.all()
+    monos = Monografia.objects.prefetch_related('profesores__profesor', 'profesores__rol', 'estudiante_set').all()
 
     if request.htmx:
         if request.method == "GET":
@@ -19,6 +20,7 @@ def index(request):
         return render(request, 'Register/index.html', {'monos': monos, 'index_url': index_url, 'addEstuUrl': addEstuUrl})
 
     return render(request, 'Register/layout.html', {'monos': monos, 'index_url': index_url})
+
 
 
 def registerMono(request):

@@ -1,6 +1,5 @@
 {% block content %}
 <div class="container">
-
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -12,6 +11,8 @@
                     <th scope="col">Tiempo de defensa</th>
                     <th scope="col">Tiempo otorgado</th>
                     <th scope="col">Tiempo de Preguntas</th>
+                    <th scope="col">Estudiantes</th>
+                    <th scope="col">Profesores Asignados</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
@@ -25,41 +26,37 @@
                         <td>{{ mono.tiempo_defensa }}</td>
                         <td>{{ mono.tiempo_otorgado }}</td>
                         <td>{{ mono.tiempo_pregunta }}</td>
+
+                        <!-- Estudiantes Column -->
+                        <td>
+                            {% if mono.estudiante_set.all %}
+                                {% for estu in mono.estudiante_set.all %}
+                                    {{ estu.nombres }} {{ estu.apellidos }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                No hay estudiantes asignados
+                            {% endif %}
+                        </td>
+
+                        <!-- Profesores Asignados Column -->
+                        <td>
+                            {% if mono.profesores.all %}
+                                {% for profesor_monografia in mono.profesores.all %}
+                                    {{ profesor_monografia.profesor.nombres }} {{ profesor_monografia.profesor.apellidos }} ({{ profesor_monografia.rol.nombre }}){% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                No hay profesores asignados
+                            {% endif %}
+                        </td>
+
                         <td>
                             <form id="deleteMonoForm" data-register-url="{% url 'deleteMono' id=mono.id %}" method="post">
                                 <input type="hidden" name="id" value="{{ mono.id }}" />
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger">Eliminar</button>
                             </form>
-                            <button class="btn btn-info mt-2" data-toggle="modal" data-target="#infoModal{{ mono.id }}">More Info</button>
                         </td>
                     </tr>
-
-                    <!-- Modal -->
-                    <div class="modal fade" id="infoModal{{ mono.id }}" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel{{ mono.id }}" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="infoModalLabel{{ mono.id }}">Información de la Monografía: {{ mono.titulo }}</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <p><strong>Estudiante:</strong> {% if mono.estudiante %}{{ mono.estudiante.nombres }} {{ mono.estudiante.apellidos }}{% else %}this is gonna show the student assign{% endif %}</p>
-                                    <p><strong>Profesores asignados:</strong></p>
-                                    {% for profesor_monografia in mono.profesores %}
-                                        <p>{{ profesor_monografia.profesor.nombres }} {{ profesor_monografia.profesor.apellidos }} - {{ profesor_monografia.rol.nombre }}</p>
-                                    {% empty %}
-                                        <p>this is gonna show the teacher assign</p>
-                                    {% endfor %}
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 {% empty %}
                     <tr>
                         <td colspan="10" class="text-center align-middle">No hay monografías registradas</td>
@@ -68,6 +65,5 @@
             </tbody>
         </table>
     </div>
-
 </div>
 {% endblock %}

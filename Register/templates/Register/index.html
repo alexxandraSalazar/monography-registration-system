@@ -11,39 +11,105 @@
 </head>
 <body data-index-url="{{ index_url }}" >
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="{% url 'index' %}" hx-get="{% url 'index' %}" hx-target="#content" hx-swap="innerHTML">Registro de Monografías</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'registerEstu' %}" hx-get="{% url 'registerEstu' %}" hx-target="#content" hx-swap="innerHTML">Registrar Estudiante</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'registerProf' %}" hx-get="{% url 'registerProf' %}" hx-target="#content" hx-swap="innerHTML">Registrar Profesor</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Monografía</a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{% url 'registerMono' %}" hx-get="{% url 'registerMono' %}" hx-target="#content" hx-swap="innerHTML">Registrar Monografía</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'addEstu' %}" hx-get="{% url 'addEstu' %}" hx-target="#content" hx-swap="innerHTML">Añadir Estudiantes</a>
-                    <a class="dropdown-item" href="{% url 'addTutor' %}" hx-get="{% url 'addTutor' %}" hx-target="#content" hx-swap="innerHTML">Añadir Tutor</a>
-                    <a class="dropdown-item" href="{% url 'addJudges' %}" hx-get="{% url 'addJudges' %}" hx-target="#content" hx-swap="innerHTML">Añadir Jurados</a>
-                </div>
-            </li>
-        </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" />
-            <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
-        </form>
-    </div>
-    </nav>
+        <a class="navbar-brand" href="{% url 'index' %}" hx-get="{% url 'index' %}" hx-target="#content" hx-swap="innerHTML">Registro de Monografías</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'registerEstu' %}" hx-get="{% url 'registerEstu' %}" hx-target="#content" hx-swap="innerHTML">Registrar Estudiante</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'registerProf' %}" hx-get="{% url 'registerProf' %}" hx-target="#content" hx-swap="innerHTML">Registrar Profesor</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Monografía</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'registerMono' %}" hx-get="{% url 'registerMono' %}" hx-target="#content" hx-swap="innerHTML">Registrar Monografía</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'addEstu' %}" hx-get="{% url 'addEstu' %}" hx-target="#content" hx-swap="innerHTML">Ver Estudiantes</a>
+                        <a class="dropdown-item" href="{% url 'addTutor' %}" hx-get="{% url 'addTutor' %}" hx-target="#content" hx-swap="innerHTML">Ver Profesores</a>
+                    </div>
+                </li>
+            </ul>
+            <!-- <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" />
+                <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+            </form> -->
+        </div>
+        </nav>
 
     <div class="col-sm p-3 min-vh-100 " id="content">
         {% block content %}
+        <div class="container">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Título</th>
+                            <th scope="col">Fecha de Defensa</th>
+                            <th scope="col">Nota de defensa</th>
+                            <th scope="col">Tiempo de defensa</th>
+                            <th scope="col">Tiempo otorgado</th>
+                            <th scope="col">Tiempo de Preguntas</th>
+                            <th scope="col">Estudiantes</th>
+                            <th scope="col">Profesores Asignados</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mono in monos %}
+                            <tr>
+                                <td>{{ mono.id }}</td>
+                                <td>{{ mono.titulo }}</td>
+                                <td>{{ mono.fecha_defensa }}</td>
+                                <td>{{ mono.nota_defensa }}</td>
+                                <td>{{ mono.tiempo_defensa }}</td>
+                                <td>{{ mono.tiempo_otorgado }}</td>
+                                <td>{{ mono.tiempo_pregunta }}</td>
+        
+                                <!-- Estudiantes Column -->
+                                <td>
+                                    {% if mono.estudiante_set.all %}
+                                        {% for estu in mono.estudiante_set.all %}
+                                            {{ estu.nombres }} {{ estu.apellidos }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        No hay estudiantes asignados
+                                    {% endif %}
+                                </td>
+        
+                                <!-- Profesores Asignados Column -->
+                                <td>
+                                    {% if mono.profesores.all %}
+                                        {% for profesor_monografia in mono.profesores.all %}
+                                            {{ profesor_monografia.profesor.nombres }} {{ profesor_monografia.profesor.apellidos }} ({{ profesor_monografia.rol.nombre }}){% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        No hay profesores asignados
+                                    {% endif %}
+                                </td>
+        
+                                <td>
+                                    <form id="deleteMonoForm" data-register-url="{% url 'deleteMono' id=mono.id %}" method="post">
+                                        <input type="hidden" name="id" value="{{ mono.id }}" />
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="10" class="text-center align-middle">No hay monografías registradas</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
         {% endblock %}
     </div>
