@@ -7,6 +7,8 @@ from .models import Monografia, Estudiante, Profesor, Rol, ProfesorMonografia
 
 # Create your views here.
 
+
+
 def index(request):
     index_url = reverse('index')
     addEstuUrl = reverse('addEstu')
@@ -93,7 +95,43 @@ def registerMono(request):
 
     return render(request, 'Register/layout.html')
 
+def editMono(request, id):
+    # Obtener la monografía a editar
+    mono = get_object_or_404(Monografia, id=id)
 
+    # Obtener todos los profesores y estudiantes para llenar los dropdowns
+    professors = Profesor.objects.all()
+    students = Estudiante.objects.all()
+
+    if request.method == "POST":
+        # Aquí capturas y actualizas los datos del formulario
+        mono.titulo = request.POST.get('titulo')
+        mono.fecha_defensa = request.POST.get('fecha_defensa')
+        mono.nota_defensa = request.POST.get('nota_defensa')
+        mono.tiempo_otorgado = request.POST.get('tiempo_otorgado')
+        mono.tiempo_defensa = request.POST.get('tiempo_defensa')
+        mono.tiempo_pregunta = request.POST.get('tiempo_pregunta')
+
+        # Actualizar jurados y tutor
+        mono.jurado1_id = request.POST.get('jurado1')
+        mono.jurado2_id = request.POST.get('jurado2')
+        mono.jurado3_id = request.POST.get('jurado3')
+        mono.tutor_id = request.POST.get('tutor')
+
+        # Actualizar estudiantes
+        mono.estudiante1_id = request.POST.get('estudiante1')
+        mono.estudiante2_id = request.POST.get('estudiante2')
+        mono.estudiante3_id = request.POST.get('estudiante3')
+
+        mono.save()
+        # Redirigir a la página principal después de la edición exitosa
+        return redirect('index')
+
+    return render(request, 'partials/edit_mono.html', {
+        'mono': mono,
+        'professors': professors,
+        'students': students,
+    })
 
 def registerEstu(request):
     if request.method == "POST":

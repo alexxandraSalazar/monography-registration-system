@@ -54,6 +54,8 @@
                                 <input type="hidden" name="id" value="{{ mono.id }}" />
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger">Eliminar</button>
+
+                                <a href="{% url 'editMono' id=mono.id %}" class="btn btn-info">Editar</a>
                             </form>
                         </td>
                     </tr>

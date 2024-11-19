@@ -1,0 +1,116 @@
+{% block content %}
+<div class="container">
+    <h1>Editar Monografía</h1>
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="inputTitulo">Título</label>
+            <input name="titulo" type="text" class="form-control" id="inputTitulo" value="{{ mono.titulo }}" required>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="inputFechaDefensa">Fecha de Defensa</label>
+                <input name="fecha_defensa" type="date" class="form-control" id="inputFechaDefensa" value="{{ mono.fecha_defensa }}" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputNotaDefensa">Nota de Defensa</label>
+                <input name="nota_defensa" type="number" class="form-control" id="inputNotaDefensa" value="{{ mono.nota_defensa }}" min="0" max="100" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="inputTiempoOtorgado">Tiempo Otorgado</label>
+                <input name="tiempo_otorgado" type="text" class="form-control" id="inputTiempoOtorgado" value="{{ mono.tiempo_otorgado }}" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputTiempoDefensa">Tiempo de Defensa</label>
+                <input name="tiempo_defensa" type="text" class="form-control" id="inputTiempoDefensa" value="{{ mono.tiempo_defensa }}" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="inputTiempoPregunta">Tiempo de Pregunta</label>
+            <input name="tiempo_pregunta" type="text" class="form-control" id="inputTiempoPregunta" value="{{ mono.tiempo_pregunta }}" required>
+        </div>
+
+        <!-- Dropdowns de jurados y tutor -->
+        <div class="form-group">
+            <label for="inputJurado1">Jurado 1</label>
+            <select name="jurado1" id="inputJurado1" class="form-control">
+                <option value="">Seleccione un jurado</option>
+                {% for profesor in professors %}
+                    <option value="{{ profesor.id }}" {% if profesor.id == mono.jurado1_id %}selected{% endif %}>{{ profesor.nombres }} {{ profesor.apellidos }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="inputJurado2">Jurado 2</label>
+            <select name="jurado2" id="inputJurado2" class="form-control">
+                <option value="">Seleccione un jurado</option>
+                {% for profesor in professors %}
+                    <option value="{{ profesor.id }}" {% if profesor.id == mono.jurado2_id %}selected{% endif %}>{{ profesor.nombres }} {{ profesor.apellidos }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="inputJurado3">Jurado 3</label>
+            <select name="jurado3" id="inputJurado3" class="form-control">
+                <option value="">Seleccione un jurado</option>
+                {% for profesor in professors %}
+                    <option value="{{ profesor.id }}" {% if profesor.id == mono.jurado3_id %}selected{% endif %}>{{ profesor.nombres }} {{ profesor.apellidos }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="inputTutor">Tutor</label>
+            <select name="tutor" id="inputTutor" class="form-control">
+                <option value="">Seleccione un tutor</option>
+                {% for profesor in professors %}
+                    <option value="{{ profesor.id }}" {% if profesor.id == mono.tutor_id %}selected{% endif %}>{{ profesor.nombres }} {{ profesor.apellidos }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Dropdowns de estudiantes -->
+        <div class="form-group">
+            <label for="inputEstudiante1">Estudiante 1</label>
+            <select name="estudiante1" id="inputEstudiante1" class="form-control">
+                <option value="">Seleccione un estudiante</option>
+                {% for student in students %}
+                    <option value="{{ student.id }}" {% if student.id == mono.estudiante1_id %}selected{% endif %}>{{ student.nombres }} {{ student.apellidos }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="inputEstudiante2">Estudiante 2</label>
+            <select name="estudiante2" id="inputEstudiante2" class="form-control">
+                <option value="">Seleccione un estudiante</option>
+                {% for student in students %}
+                    <option value="{{ student.id }}" {% if student.id == mono.estudiante2_id %}selected{% endif %}>{{ student.nombres }} {{ student.apellidos }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="inputEstudiante3">Estudiante 3</label>
+            <select name="estudiante3" id="inputEstudiante3" class="form-control">
+                <option value="">Seleccione un estudiante</option>
+                {% for student in students %}
+                    <option value="{{ student.id }}" {% if student.id == mono.estudiante3_id %}selected{% endif %}>{{ student.nombres }} {{ student.apellidos }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary">Actualizar Monografía</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
