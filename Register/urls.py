@@ -17,5 +17,7 @@ urlpatterns = [
     path('asignar-tutor', views.asignarTutor, name="asignarTutor"),
     path('asignar-Jurado', views.asignarJurado, name="asignarJurado"),
     path('edit_monografia/<int:id>/', views.editMono, name='editMono'),
-
-]
+    path('monografia/data/<int:pk>/', views.pdfdata, name='pdfdata'),
+    path('monografia/<int:id>/details/', views.get_monografia_details, name='monografia_details'),
+    path('monografia/<int:id>/update/', views.update_monografia, name='update_monografia'),
+]   

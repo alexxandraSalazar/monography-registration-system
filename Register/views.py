@@ -2,13 +2,10 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from .models import Monografia, Estudiante, Profesor, Rol, ProfesorMonografia
-
+from django.core.serializers import serialize
 
 
 # Create your views here.
-
-
-
 def index(request):
     index_url = reverse('index')
     addEstuUrl = reverse('addEstu')
@@ -22,6 +19,40 @@ def index(request):
         return render(request, 'Register/index.html', {'monos': monos, 'index_url': index_url, 'addEstuUrl': addEstuUrl})
 
     return render(request, 'Register/layout.html', {'monos': monos, 'index_url': index_url})
+
+def pdfdata(request, pk):
+    try:
+        monografia = Monografia.objects.get(pk=pk)
+
+        estudiantes = Estudiante.objects.filter(monografia=monografia).values(
+            'id', 'nombres', 'apellidos', 'direccion', 'telefono', 'fecha_nacimiento'
+        )
+
+        profesores = ProfesorMonografia.objects.filter(monografia=monografia).values(
+            'profesor__id', 
+            'profesor__nombres', 
+            'profesor__apellidos', 
+            'rol__nombre'
+        )
+
+        data = {
+            "monografia": {
+                "id": monografia.id,
+                "titulo": monografia.titulo,
+                "fecha_defensa": monografia.fecha_defensa,
+                "nota_defensa": monografia.nota_defensa,
+                "tiempo_otorgado": monografia.tiempo_otorgado,
+                "tiempo_defensa": monografia.tiempo_defensa,
+                "tiempo_pregunta": monografia.tiempo_pregunta,
+            },
+            "estudiantes": list(estudiantes),
+            "profesores": list(profesores),
+        }
+
+        return JsonResponse(data, safe=False)
+
+    except Monografia.DoesNotExist:
+        return JsonResponse({"error": "Monografía no encontrada"}, status=404)
 
 
 
@@ -96,15 +127,12 @@ def registerMono(request):
     return render(request, 'Register/layout.html')
 
 def editMono(request, id):
-    # Obtener la monografía a editar
     mono = get_object_or_404(Monografia, id=id)
 
-    # Obtener todos los profesores y estudiantes para llenar los dropdowns
     professors = Profesor.objects.all()
     students = Estudiante.objects.all()
 
     if request.method == "POST":
-        # Aquí capturas y actualizas los datos del formulario
         mono.titulo = request.POST.get('titulo')
         mono.fecha_defensa = request.POST.get('fecha_defensa')
         mono.nota_defensa = request.POST.get('nota_defensa')
@@ -112,19 +140,16 @@ def editMono(request, id):
         mono.tiempo_defensa = request.POST.get('tiempo_defensa')
         mono.tiempo_pregunta = request.POST.get('tiempo_pregunta')
 
-        # Actualizar jurados y tutor
         mono.jurado1_id = request.POST.get('jurado1')
         mono.jurado2_id = request.POST.get('jurado2')
         mono.jurado3_id = request.POST.get('jurado3')
         mono.tutor_id = request.POST.get('tutor')
 
-        # Actualizar estudiantes
         mono.estudiante1_id = request.POST.get('estudiante1')
         mono.estudiante2_id = request.POST.get('estudiante2')
         mono.estudiante3_id = request.POST.get('estudiante3')
 
         mono.save()
-        # Redirigir a la página principal después de la edición exitosa
         return redirect('index')
 
     return render(request, 'partials/edit_mono.html', {
@@ -132,6 +157,64 @@ def editMono(request, id):
         'professors': professors,
         'students': students,
     })
+
+
+def get_monografia_details(request, id):
+    monografia = get_object_or_404(Monografia, id=id)
+
+    estudiantes = Estudiante.objects.filter(monografia=monografia).values(
+        'id', 'nombres', 'apellidos', 'direccion', 'telefono', 'fecha_nacimiento'
+    )
+
+    profesores = ProfesorMonografia.objects.filter(monografia=monografia).values(
+        'profesor__id', 'profesor__nombres', 'profesor__apellidos', 'rol__nombre'
+    )
+
+    data = {
+        'monografia': {
+            'titulo': monografia.titulo,
+            'fecha_defensa': monografia.fecha_defensa,
+            'nota_defensa': monografia.nota_defensa,
+            'tiempo_otorgado': monografia.tiempo_otorgado,
+            'tiempo_defensa': monografia.tiempo_defensa,
+            'tiempo_pregunta': monografia.tiempo_pregunta,
+        },
+        'estudiantes': list(estudiantes),
+        'profesores': list(profesores),
+    }
+
+    return JsonResponse(data)
+
+
+def update_monografia(request, id):
+    if request.method == 'POST':
+        monografia = get_object_or_404(Monografia, id=id)
+
+        monografia.titulo = request.POST.get('titulo', monografia.titulo)
+        monografia.fecha_defensa = request.POST.get('fecha_defensa', monografia.fecha_defensa)
+        monografia.nota_defensa = request.POST.get('nota_defensa', monografia.nota_defensa)
+        monografia.tiempo_otorgado = request.POST.get('tiempo_otorgado', monografia.tiempo_otorgado)
+        monografia.tiempo_defensa = request.POST.get('tiempo_defensa', monografia.tiempo_defensa)
+        monografia.tiempo_pregunta = request.POST.get('tiempo_pregunta', monografia.tiempo_pregunta)
+        monografia.save()
+
+        estudiantes_ids = request.POST.getlist('estudiantes')  # IDs seleccionados en el select
+        Estudiante.objects.filter(monografia=monografia).update(monografia=None)  # Quitar relaciones anteriores
+        Estudiante.objects.filter(id__in=estudiantes_ids).update(monografia=monografia)
+
+        profesores_ids = request.POST.getlist('profesores')  
+        profesores_actuales = ProfesorMonografia.objects.filter(monografia=monografia).values_list('profesor_id', flat=True)
+
+        for profesor_id in profesores_ids:
+            if int(profesor_id) not in profesores_actuales:
+                profesor = get_object_or_404(Profesor, id=profesor_id)
+                ProfesorMonografia.objects.create(monografia=monografia, profesor=profesor)
+
+        ProfesorMonografia.objects.filter(monografia=monografia).exclude(profesor_id__in=profesores_ids).delete()
+
+        return JsonResponse({'success': True, 'message': 'La monografía y sus relaciones fueron actualizadas correctamente'})
+    return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
+
 
 def registerEstu(request):
     if request.method == "POST":

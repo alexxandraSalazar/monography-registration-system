@@ -45,7 +45,7 @@
         {% block content %}
         <div class="container">
             <div class="table-responsive">
-                <table class="table">
+                <table class="table" id="mono-table">
                     <thead>
                         <tr>
                             <th scope="col">Id</th>
@@ -62,55 +62,123 @@
                     </thead>
                     <tbody>
                         {% for mono in monos %}
-                            <tr>
-                                <td>{{ mono.id }}</td>
-                                <td>{{ mono.titulo }}</td>
-                                <td>{{ mono.fecha_defensa }}</td>
-                                <td>{{ mono.nota_defensa }}</td>
-                                <td>{{ mono.tiempo_defensa }}</td>
-                                <td>{{ mono.tiempo_otorgado }}</td>
-                                <td>{{ mono.tiempo_pregunta }}</td>
-        
-                                <!-- Estudiantes Column -->
-                                <td>
-                                    {% if mono.estudiante_set.all %}
-                                        {% for estu in mono.estudiante_set.all %}
-                                            {{ estu.nombres }} {{ estu.apellidos }}{% if not forloop.last %}, {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                        No hay estudiantes asignados
-                                    {% endif %}
-                                </td>
-        
-                                <!-- Profesores Asignados Column -->
-                                <td>
-                                    {% if mono.profesores.all %}
-                                        {% for profesor_monografia in mono.profesores.all %}
-                                            {{ profesor_monografia.profesor.nombres }} {{ profesor_monografia.profesor.apellidos }} ({{ profesor_monografia.rol.nombre }}){% if not forloop.last %}, {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                        No hay profesores asignados
-                                    {% endif %}
-                                </td>
-        
-                                <td>
-                                    <form id="deleteMonoForm" data-register-url="{% url 'deleteMono' id=mono.id %}" method="post">
-                                        <input type="hidden" name="id" value="{{ mono.id }}" />
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                                    </form>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td>{{ mono.id }}</td>
+                            <td>{{ mono.titulo }}</td>
+                            <td>{{ mono.fecha_defensa }}</td>
+                            <td>{{ mono.nota_defensa }}</td>
+                            <td>{{ mono.tiempo_defensa }}</td>
+                            <td>{{ mono.tiempo_otorgado }}</td>
+                            <td>{{ mono.tiempo_pregunta }}</td>
+                
+                            <!-- Estudiantes Column -->
+                            <td>
+                                {% if mono.estudiante_set.all %}
+                                    {% for estu in mono.estudiante_set.all %}
+                                        {{ estu.nombres }} {{ estu.apellidos }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    No hay estudiantes asignados
+                                {% endif %}
+                            </td>
+                
+                            <!-- Profesores Asignados Column -->
+                            <td>
+                                {% if mono.profesores.all %}
+                                    {% for profesor_monografia in mono.profesores.all %}
+                                        {{ profesor_monografia.profesor.nombres }} {{ profesor_monografia.profesor.apellidos }} ({{ profesor_monografia.rol.nombre }}){% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    No hay profesores asignados
+                                {% endif %}
+                            </td>
+                
+                            <!-- Acciones Column -->
+                            <td>
+                                <form id="deleteMonoForm" data-register-url="{% url 'deleteMono' id=mono.id %}" method="post">
+                                    <input type="hidden" name="id" value="{{ mono.id }}" />
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                    <button type="button" class="btn btn-info mt-2"
+                                        onclick="openMonografiaModal({{ mono.id }})">Editar</button>
+                                </form>
+                                <input type="hidden" id="pdf-id" value="{{ mono.id }}">
+                                <button class="btn btn-success mt-2" id="generate-pdf">Generar PDF</button>
+                            </td>
+                        </tr>
                         {% empty %}
-                            <tr>
-                                <td colspan="10" class="text-center align-middle">No hay monografías registradas</td>
-                            </tr>
+                        <tr>
+                            <td colspan="10" class="text-center align-middle">No hay monografías registradas</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
-                </table>
+                </table>        
             </div>
         </div>
-
+        
+        
+        <div class="modal fade" id="monografiaModal" tabindex="-1" role="dialog" aria-labelledby="monografiaModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="monografiaModalLabel">Editar Monografía</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="monografiaForm" data-monografia-id="">
+                            <!-- Campos existentes -->
+                            <div class="form-group">
+                                <label for="input-titulo">Título</label>
+                                <input type="text" class="form-control" id="input-titulo" name="titulo">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-fecha-defensa">Fecha de Defensa</label>
+                                <input type="date" class="form-control" id="input-fecha-defensa" name="fecha_defensa">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-nota-defensa">Nota de Defensa</label>
+                                <input type="number" class="form-control" id="input-nota-defensa" name="nota_defensa">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-tiempo-otorgado">Tiempo Otorgado (min)</label>
+                                <input type="number" class="form-control" id="input-tiempo-otorgado" name="tiempo_otorgado">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-tiempo-defensa">Tiempo de Defensa (min)</label>
+                                <input type="number" class="form-control" id="input-tiempo-defensa" name="tiempo_defensa">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-tiempo-preguntas">Tiempo de Preguntas (min)</label>
+                                <input type="number" class="form-control" id="input-tiempo-preguntas" name="tiempo_pregunta">
+                            </div>
+        
+                            <!-- Select de estudiantes -->
+                            <div class="form-group">
+                                <label for="select-estudiantes">Estudiantes</label>
+                                <select multiple class="form-control" id="select-estudiantes" name="estudiantes">
+                                    <!-- Opciones dinámicas -->
+                                </select>
+                            </div>
+        
+                            <!-- Select de profesores -->
+                            <div class="form-group">
+                                <label for="select-profesores">Profesores</label>
+                                <select multiple class="form-control" id="select-profesores" name="profesores">
+                                    <!-- Opciones dinámicas -->
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" onclick="saveMonografiaChanges()">Guardar Cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         {% endblock %}
     </div>
 
@@ -123,5 +191,217 @@
 
     {% load sweetify %}
     {% sweetify %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#generate-pdf').on('click', function () {
+            const monografiaId = $('#pdf-id').val();
+            const url = `/monografia/data/${monografiaId}/`;
+
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function (data) {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+
+                    // Información de la monografía
+                    doc.setFontSize(16);
+                    doc.text(`Monografía: ${data.monografia.titulo}`, 10, 10);
+                    doc.setFontSize(12);
+                    doc.text(`Fecha de Defensa: ${data.monografia.fecha_defensa}`, 10, 20);
+                    doc.text(`Nota de Defensa: ${data.monografia.nota_defensa}`, 10, 30);
+                    doc.text(`Tiempo Otorgado: ${data.monografia.tiempo_otorgado} minutos`, 10, 40);
+                    doc.text(`Tiempo de Defensa: ${data.monografia.tiempo_defensa} minutos`, 10, 50);
+                    doc.text(`Tiempo de Preguntas: ${data.monografia.tiempo_pregunta} minutos`, 10, 60);
+
+                    // Tabla de estudiantes
+                    const estudiantes = data.estudiantes.map(estudiante => [
+                        estudiante.nombres,
+                        estudiante.apellidos,
+                        estudiante.direccion,
+                        estudiante.telefono,
+                        estudiante.fecha_nacimiento,
+                    ]);
+
+                    doc.autoTable({
+                        startY: 70,
+                        head: [['Nombres', 'Apellidos', 'Dirección', 'Teléfono', 'Fecha de Nacimiento']],
+                        body: estudiantes,
+                    });
+
+                    // Tabla de profesores
+                    const profesores = data.profesores.map(profesor => [
+                        profesor.profesor__nombres,
+                        profesor.profesor__apellidos,
+                        profesor.rol__nombre,
+                    ]);
+
+                    doc.autoTable({
+                        startY: doc.lastAutoTable.finalY + 10, // Agregar después de la tabla anterior
+                        head: [['Nombres', 'Apellidos', 'Rol']],
+                        body: profesores,
+                    });
+
+                    // Marca de agua en el pie de página
+                    const addFooter = (doc, text1, text2) => {
+                        const pageWidth = doc.internal.pageSize.getWidth();
+                        const pageHeight = doc.internal.pageSize.getHeight();
+
+                        doc.setFontSize(12); // Tamaño de fuente para el pie de página
+                        doc.setTextColor(150); // Gris oscuro
+                        doc.setFont('helvetica', 'bold');
+
+                        // Posición del texto en el pie de página
+                        doc.text(text1, pageWidth / 2, pageHeight - 20, { align: 'center' });
+                        doc.text(text2, pageWidth / 2, pageHeight - 10, { align: 'center' });
+                    };
+
+                    // Llamar a la función de pie de página (después de todo el contenido)
+                    addFooter(doc, 'Universidad Nacional de Ingeniería', 'NO OFICIAL');
+
+                    // Mostrar el PDF en una nueva ventana o pestaña
+                    window.open(doc.output('bloburl'));
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                    alert('No se pudieron obtener los datos.');
+                },
+            });
+        });
+    });
+</script>
+
+<script>
+    function openMonografiaModal(monografiaId) {
+        const form = document.getElementById('monografiaForm');
+        form.setAttribute('data-monografia-id', monografiaId); // Configura el ID de la monografía en el formulario
+
+        const url = `/monografia/${monografiaId}/details/`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Llenar los campos del formulario
+                document.getElementById('input-titulo').value = data.monografia.titulo;
+                document.getElementById('input-fecha-defensa').value = data.monografia.fecha_defensa;
+                document.getElementById('input-nota-defensa').value = data.monografia.nota_defensa;
+                document.getElementById('input-tiempo-otorgado').value = data.monografia.tiempo_otorgado;
+                document.getElementById('input-tiempo-defensa').value = data.monografia.tiempo_defensa;
+                document.getElementById('input-tiempo-preguntas').value = data.monografia.tiempo_pregunta;
+
+                // Llenar los selects de estudiantes y profesores
+                const estudiantesSelect = document.getElementById('select-estudiantes');
+                estudiantesSelect.innerHTML = '';
+                data.estudiantes.forEach(estudiante => {
+                    const option = document.createElement('option');
+                    option.value = estudiante.id;
+                    option.textContent = `${estudiante.nombres} ${estudiante.apellidos}`;
+                    estudiantesSelect.appendChild(option);
+                });
+
+                const profesoresSelect = document.getElementById('select-profesores');
+                profesoresSelect.innerHTML = '';
+                data.profesores.forEach(profesor => {
+                    const option = document.createElement('option');
+                    option.value = profesor.profesor__id;
+                    option.textContent = `${profesor.profesor__nombres} ${profesor.profesor__apellidos} (${profesor.rol__nombre})`;
+                    profesoresSelect.appendChild(option);
+                });
+
+                // Abrir el modal
+                $('#monografiaModal').modal('show');
+            })
+            .catch(error => {
+                console.error("Error al obtener los detalles de la monografía:", error);
+                alert('Hubo un error al cargar los datos de la monografía.');
+            });
+    }
+</script>
+
+<script>
+    function saveMonografiaChanges() {
+        const form = document.getElementById('monografiaForm');
+        const monografiaId = form.dataset.monografiaId;
+
+        // Validar si el ID de la monografía está presente
+        if (!monografiaId) {
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo determinar la monografía a actualizar.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
+
+        const formData = new FormData(form);
+
+        fetch(`/monografia/${monografiaId}/update/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Éxito',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    }).then(() => {
+                        $('#monografiaModal').modal('hide'); // Cierra el modal
+                        location.reload(); // Recarga la página
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error al actualizar la monografía:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un problema al guardar los cambios.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            });
+    }
+</script>
+
+<script>
+    $(document).ready(function() {
+    $('#mono-table').DataTable().destroy();
+    $('#mono-table').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-MX.json'
+        }
+    });
+});
+</script>
 </body>
 </html>
